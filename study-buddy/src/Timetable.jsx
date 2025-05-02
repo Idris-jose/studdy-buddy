@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import Nav from './navbar.jsx';
 
 // Use environment variable for production; hardcoded for debugging
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
 export default function Timetable() {
     const location = useLocation();

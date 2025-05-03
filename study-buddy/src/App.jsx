@@ -11,6 +11,7 @@ import Demo from './Demo.jsx';
 import MainApp from './mainapp.jsx';
 import CourseInput from './CourseInput.jsx';
 import Timetable from './Timetable.jsx';
+import Syllabus from './syllabus.jsx';
 
 // Home component to group sections for the homepage
 const Home = () => (
@@ -51,6 +52,9 @@ function App() {
             <Route path="/course-input" element={<CourseInput />} />
             {/* Timetable route */}
             <Route path="/timetable" element={<Timetable />} />
+            {/* Syllabus route */}
+            <Route path="/syllabus" element={<Syllabus />} />
+            {/* About Us route */}
             {/* Catch-all route for 404 Not Found */}
             <Route path="*" element={<NotFound />} />
           </Routes>

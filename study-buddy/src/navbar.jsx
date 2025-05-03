@@ -22,7 +22,7 @@ export default function Nav() {
             {/* Desktop Links */}
             <div className="hidden md:flex items-center space-x-4">
                 <NavLink
-                    to="/home"
+                    to="/mainapp"
                     className={({ isActive }) =>
                         isActive ? "text-blue-400" : "hover:text-blue-300"
                     }
@@ -114,6 +114,15 @@ export default function Nav() {
                         onClick={() => setIsMenuOpen(false)}
                     >
                         Timetable
+                    </NavLink>
+                    <NavLink
+                    to="/syllabus"
+                    className={({ isActive }) =>
+                        isActive ? "text-blue-400" : "hover:text-blue-300"
+                    }
+                    onClick={() => setIsMenuOpen(false)}
+                    >
+                        Syllabus
                     </NavLink>
                     <NavLink
                         to="/about"

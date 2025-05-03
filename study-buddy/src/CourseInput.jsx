@@ -132,6 +132,24 @@ export default function CourseInput() {
                     >
                         Done ({courses.length}/3)
                     </button>
+                    {courses.length >= 3 && (
+              <div className="mt-4 flex flex-col sm:flex-row gap-4">
+                <button
+                  onClick={() =>
+                    navigate('/timetable', { state: { courses } })
+                  }
+                  className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold py-3 rounded-lg hover:from-blue-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105"
+                >
+                  Go to Timetable
+                </button>
+                <button
+                  onClick={() => navigate('/syllabus', { state: { courses } })}
+                  className="w-full bg-gradient-to-r from-blue-500 to-purple-500 text-white font-bold py-3 rounded-lg hover:from-blue-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-105"
+                >
+                  Go to Syllabus
+                </button>
+              </div>
+            )}
                 </div>
             )}
         </div>

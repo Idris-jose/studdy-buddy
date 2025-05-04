@@ -11,11 +11,7 @@ export default function Nav() {
         >
             {/* Logo Section */}
             <div className="flex items-center space-x-2">
-                <img
-                    src="/logo.png"
-                    alt="Study Buddy Logo"
-                    className="h-8 w-8"
-                />
+               
                 <div className="text-2xl font-bold">Study Buddy</div>
             </div>
 

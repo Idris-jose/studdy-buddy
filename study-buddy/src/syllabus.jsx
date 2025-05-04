@@ -110,7 +110,7 @@ export default function SyllabusInput() {
     <>
       <Nav />
       <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 flex flex-col items-center justify-center p-4">
-        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 mb-8 animate-pulse">
+        <h1 className="text-4xl mt-10 font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 mb-8 animate-pulse">
           Generate Reading Syllabus
         </h1>
 

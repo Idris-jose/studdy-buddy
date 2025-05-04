@@ -85,7 +85,7 @@ export default function Nav() {
             {isMenuOpen && (
                 <div className="absolute top-14 left-0 w-full bg-gray-800 text-white flex flex-col space-y-2 px-4 py-3 shadow-md md:hidden">
                     <NavLink
-                        to="/home"
+                        to="/mainapp"
                         className={({ isActive }) =>
                             isActive ? "text-blue-400" : "hover:text-blue-300"
                         }

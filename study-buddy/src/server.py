@@ -1,7 +1,6 @@
-
 from flask import Flask, request, jsonify
 from pdfminer.high_level import extract_text
-import requests
+import requests 
 import os
 from werkzeug.utils import secure_filename
 from flask_cors import CORS

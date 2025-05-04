@@ -1,4 +1,4 @@
-// App.jsx
+// App.jsx - Updated with PDF worker import
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Header from './Header.jsx';
 import Section1 from './Section1.jsx';
@@ -12,6 +12,11 @@ import MainApp from './mainapp.jsx';
 import CourseInput from './CourseInput.jsx';
 import Timetable from './Timetable.jsx';
 import Syllabus from './syllabus.jsx';
+import TqSolver from './tqsolver.jsx'; 
+import ErrorBoundary from './Errorboundary.jsx';
+
+// Load the PDF worker configuration early in the application lifecycle
+import './pdfWorker.js';
 
 // Home component to group sections for the homepage
 const Home = () => (
@@ -36,6 +41,7 @@ const NotFound = () => (
 function App() {
   return (
     <BrowserRouter>
+      <ErrorBoundary>
       <div className="flex flex-col min-h-screen">
         <main className="flex-1">
           <Routes>
@@ -54,7 +60,8 @@ function App() {
             <Route path="/timetable" element={<Timetable />} />
             {/* Syllabus route */}
             <Route path="/syllabus" element={<Syllabus />} />
-            {/* About Us route */}
+            {/* TQ Solver route */}
+            <Route path="/tqsolver" element={<TqSolver />} />
             {/* Catch-all route for 404 Not Found */}
             <Route path="*" element={<NotFound />} />
           </Routes>
@@ -62,6 +69,7 @@ function App() {
         {/* Footer is always present */}
         <Footer />
       </div>
+      </ErrorBoundary>
     </BrowserRouter>
   );
 }

@@ -41,6 +41,14 @@ export default function Nav() {
                 >
                     Timetable
                 </NavLink>
+                <NavLink
+                    to="/tqsolver"
+                    className={({ isActive }) =>
+                        isActive ? "text-blue-400" : "hover:text-blue-300"
+                    }
+                >   
+                    tqsolver
+                </NavLink>
                 <div className="relative group">
                     <button className="hover:text-blue-300">More</button>
                     <div className="absolute hidden group-hover:block bg-gray-700 text-sm mt-2 rounded shadow-lg">
@@ -120,6 +128,14 @@ export default function Nav() {
                     >
                         Syllabus
                     </NavLink>
+                    <NavLink
+                    to="/tqsolver"
+                    className={({ isActive }) =>
+                        isActive ? "text-blue-400" : "hover:text-blue-300"
+                    }
+                >   
+                    tqsolver
+                </NavLink>
                     <NavLink
                         to="/about"
                         className="hover:text-blue-300"

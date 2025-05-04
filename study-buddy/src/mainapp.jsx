@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import Nav from './navbar.jsx';
 
+
 export default function MainApp() {
   const navigate = useNavigate();
 
@@ -8,6 +9,7 @@ export default function MainApp() {
 <>
 
 <Nav />
+
     <div className="flex mt-10 flex-col min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100">
      
       <div className="flex-1 flex flex-col items-center justify-center p-8">
@@ -45,7 +47,17 @@ export default function MainApp() {
               Generate a detailed reading syllabus for your selected courses.
             </p>
           </div>
-          
+
+          <div
+            onClick={() => navigate('/tqsolver')}
+            className="bg-white rounded-2xl shadow-xl p-8 transform hover:scale-105 transition-transform duration-300 cursor-pointer"
+          >
+            <h2 className="text-2xl font-bold text-green-600 mb-4">TQ Solver</h2>
+            <p className="text-gray-600">
+              Solve your TQ problems with our easy-to-use solver.
+            </p>
+          </div>
+
           <div className="bg-white rounded-2xl shadow-xl p-8">
             <h2 className="text-2xl font-bold text-indigo-600 mb-4">Quick Start</h2>
             <ol className="list-decimal pl-5 text-gray-600 space-y-2">

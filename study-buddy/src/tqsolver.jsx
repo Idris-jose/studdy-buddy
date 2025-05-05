@@ -159,7 +159,7 @@ export default function TqSolver() {
               <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">
                 Solutions
               </h2>
-              <div className="bg-white rounded-lg shadow-md p-6 max-h-96 overflow-y-auto">
+              <div className="bg-white rounded-lg shadow-md p-6 max-h-96 max-w-250 overflow-y-auto">
                 {Object.entries(solutions).map(([key, { question, solution }]) => (
                   <div
                     key={key}

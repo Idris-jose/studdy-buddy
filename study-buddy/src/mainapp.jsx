@@ -64,6 +64,7 @@ export default function MainApp() {
               <li>Add your courses in Course Input</li>
               <li>Generate your reading timetable</li>
               <li>Create syllabi for each course</li>
+              <li>Solve your tutorial Questions</li>
             </ol>
           </div>
         </div>

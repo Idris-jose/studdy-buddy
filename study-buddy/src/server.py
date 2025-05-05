@@ -4,6 +4,9 @@ import requests
 import os
 from werkzeug.utils import secure_filename
 from flask_cors import CORS
+import json
+from dotenv import load_dotenv
+load_dotenv()
 
 
 app = Flask(__name__)
@@ -13,7 +16,7 @@ os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Gemini API configuration
-GEMINI_API_KEY = os.getenv('GEMINI_API_KEY', 'YOUR_GEMINI_API_KEY')  # Use environment variable or fallback
+GEMINI_API_KEY = os.getenv('VITE_GEMINI_API_KEY')  # Use environment variable or fallback
 GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent'
 
 @app.route('/upload', methods=['POST'])

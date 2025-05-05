@@ -1,4 +1,5 @@
 import Nav from "./navbar.jsx";
+import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from "react";
 
 export default function TqSolver() {
@@ -8,6 +9,23 @@ export default function TqSolver() {
   const [solutions, setSolutions] = useState(null);
 
   console.log("TqSolver component mounted");
+
+   // Animation variants
+   const buttonVariants = {
+    hover: { scale: 1.05, transition: { duration: 0.3 } },
+    tap: { scale: 0.95, transition: { duration: 0.2 } },
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } },
+  };
+
+  const errorVariants = {
+    hidden: { opacity: 0, y: -20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+  };
+
 
   const handleFileChange = (event) => {
     const uploadedFile = event.target.files[0];
@@ -86,9 +104,18 @@ export default function TqSolver() {
     <>
       <Nav />
       <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 flex flex-col items-center justify-center p-4">
-        <h1 className="text-3xl sm:text-4xl mt-10 font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 mb-8 animate-pulse text-center">
-          Solve your TQ
-        </h1>
+      <motion.h1
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+          className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-purple-700 mb-6 text-center"
+        >
+          Master Your Tutorial Questions
+        </motion.h1>
+        <p className="text-lg text-gray-700 mb-8 text-center max-w-2xl">
+          Upload a PDF with your questions to receive detailed solutions and curated resources from trusted platforms like Khan Academy or MIT OpenCourseWare. Tip: Structure your PDF with clear, numbered questions for the best results!
+        </p>
+
 
         <div className="w-full max-w-md space-y-4">
           <div className="text-sm text-gray-600 text-center">
@@ -110,9 +137,19 @@ export default function TqSolver() {
             </p>
           )}
 
-          {error && (
-            <p className="text-red-500 text-sm text-center">{error}</p>
-          )}
+<AnimatePresence>
+              {error && (
+                <motion.p
+                  variants={errorVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="hidden"
+                  className="text-red-500 text-sm text-center bg-red-50 p-3 rounded-lg"
+                >
+                  {error}
+                </motion.p>
+              )}
+            </AnimatePresence>
 
           {loading && (
             <div className="flex items-center justify-center space-x-2">
@@ -154,28 +191,72 @@ export default function TqSolver() {
             </button>
           )}
 
-          {solutions && (
-            <div className="mt-6 w-full">
-              <h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">
-                Solutions
-              </h2>
-              <div className="bg-white rounded-lg shadow-md p-6 max-h-96 max-w-250 overflow-y-auto">
-                {Object.entries(solutions).map(([key, { question, solution }]) => (
-                  <div
+{solutions && (
+          <div className="mt-10 w-full max-w-full sm:max-w-lg md:max-w-2xl lg:max-w-4xl">
+            <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+              Your Solutions
+            </h2>
+            <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8">
+              <AnimatePresence>
+                {Object.entries(solutions).map(([key, { question, solution, links }]) => (
+                  <motion.div
                     key={key}
-                    className="mb-4 pb-4 border-b last:border-b-0 border-dotted border-gray-300"
+                    variants={cardVariants}
+                    initial="hidden"
+                    animate="visible"
+                    className="mb-6 pb-6 border-b last:border-b-0 border-gray-200"
                   >
-                    <h3 className="text-lg font-semibold text-blue-600">
+                    <h3 className="text-xl font-semibold text-blue-700 mb-2">
                       {key}: {question}
                     </h3>
-                    <p className="text-gray-600 mt-2 whitespace-pre-wrap">
+                    <p className="text-gray-600 mt-2 whitespace-pre-wrap leading-relaxed">
                       {solution}
                     </p>
-                  </div>
+                    {links && links.length > 0 ? (
+                      <div className="mt-4">
+                        <p className="text-sm font-semibold text-gray-800">Explore More:</p>
+                        <ul className="list-disc pl-6 text-sm text-gray-700">
+                          {links.map((link, linkIndex) => (
+                            <li key={linkIndex} className="flex items-center gap-3 mt-2">
+                              {linkStatus[link] === false ? (
+                                <>
+                                  <span className="text-gray-500 italic">
+                                    Resource unavailable: {link}
+                                  </span>
+                                  <motion.button
+                                    whileHover={{ scale: 1.1 }}
+                                    whileTap={{ scale: 0.9 }}
+                                    onClick={() => handleReportBrokenLink(link)}
+                                    className="text-red-500 hover:text-red-700 text-xs font-medium"
+                                  >
+                                    Report
+                                  </motion.button>
+                                </>
+                              ) : (
+                                <a
+                                  href={link}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-blue-600 hover:underline hover:text-blue-800 transition"
+                                >
+                                  {link}
+                                </a>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-500 mt-4 italic">
+                        No additional resources provided for this question.
+                      </p>
+                    )}
+                  </motion.div>
                 ))}
-              </div>
+              </AnimatePresence>
             </div>
-          )}
+          </div>
+        )}
         </div>
       </div>
     </>

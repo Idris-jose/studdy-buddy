@@ -41,11 +41,13 @@ def upload_pdf():
 
             # Prepare prompt for Gemini API (same as in your frontend)
             prompt = f"""
-                You are an expert tutor. The following text contains questions from a test or questionnaire (TQ). Analyze the text, identify the questions, and provide clear, concise, and accurate solutions for each question. Format the response as a JSON object where each key is a question number or identifier (e.g., "Q1", "Q2") and the value is an object with "question" (the question text) and "solution" (the answer or explanation). If the questions are not clearly numbered, infer the structure and assign identifiers. If the text is unclear, provide your best interpretation.
+                You are an expert tutor with a strong background in mathematics and problem-solving. The following text contains questions from a test or questionnaire (TQ). Analyze the text, identify the questions, and provide clear, concise, and accurate solutions for each question. Pay special attention to mathematical problems, ensuring that all calculations are correct and explanations are thorough. Format the response as a JSON object where each key is a question number or identifier (e.g., "Q1", "Q2") and the value is an object with "question" (the question text) and "solution" (the answer or explanation). If the questions are not clearly numbered, infer the structure and assign identifiers. If the text is unclear, provide your best interpretation.
+
+                For mathematical problems, include step-by-step solutions where applicable, and ensure that the final answer is clearly stated.
 
                 For best results, expect the text to be structured like:
                 Q1: What is 2 + 2?
-                Q2: Define gravity.
+                Q2: Solve for x: 2x + 3 = 7.
                 Or similar clear formats.
 
                 Text from file:

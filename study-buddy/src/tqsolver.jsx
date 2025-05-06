@@ -103,22 +103,21 @@ export default function TqSolver() {
   return (
     <>
       <Nav />
-      <div className="min-h-screen bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 flex flex-col items-center justify-center p-4">
-      <motion.h1
+      <div className="min-h-screen mt-15 bg-gradient-to-br from-blue-100 via-purple-100 to-pink-100 flex flex-col items-center justify-center p-4">
+        <motion.h1
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
-          className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-purple-700 mb-6 text-center"
+          className="text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-purple-700 mb-6 text-center"
         >
           Master Your Tutorial Questions
         </motion.h1>
-        <p className="text-lg text-gray-700 mb-8 text-center max-w-2xl">
+        <p className="text-base sm:text-lg text-gray-700 mb-8 text-center max-w-lg sm:max-w-2xl">
           Upload a PDF with your questions to receive detailed solutions and curated resources from trusted platforms like Khan Academy or MIT OpenCourseWare. Tip: Structure your PDF with clear, numbered questions for the best results!
         </p>
 
-
-        <div className="w-full max-w-md space-y-4">
-          <div className="text-sm text-gray-600 text-center">
+        <div className="w-full max-w-sm sm:max-w-md space-y-4">
+          <div className="text-xs sm:text-sm text-gray-600 text-center">
             Upload a .pdf file with questions (e.g., "Q1: What is 2 + 2?").
           </div>
           <label className="cursor-pointer border-dotted border-2 border-black w-full bg-blue-200 text-black py-2 px-4 rounded-lg hover:bg-blue-300 transition text-center block">
@@ -132,24 +131,24 @@ export default function TqSolver() {
           </label>
 
           {file && (
-            <p className="text-sm text-gray-700 text-center">
+            <p className="text-xs sm:text-sm text-gray-700 text-center">
               Uploaded file: {file.name} ({(file.size / 1024).toFixed(2)} KB)
             </p>
           )}
 
-<AnimatePresence>
-              {error && (
-                <motion.p
-                  variants={errorVariants}
-                  initial="hidden"
-                  animate="visible"
-                  exit="hidden"
-                  className="text-red-500 text-sm text-center bg-red-50 p-3 rounded-lg"
-                >
-                  {error}
-                </motion.p>
-              )}
-            </AnimatePresence>
+          <AnimatePresence>
+            {error && (
+              <motion.p
+                variants={errorVariants}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+                className="text-red-500 text-xs sm:text-sm text-center bg-red-50 p-3 rounded-lg"
+              >
+                {error}
+              </motion.p>
+            )}
+          </AnimatePresence>
 
           {loading && (
             <div className="flex items-center justify-center space-x-2">
@@ -173,7 +172,7 @@ export default function TqSolver() {
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 ></path>
               </svg>
-              <span className="text-gray-600">Processing...</span>
+              <span className="text-gray-600 text-xs sm:text-sm">Processing...</span>
             </div>
           )}
 
@@ -191,48 +190,35 @@ export default function TqSolver() {
             </button>
           )}
 
-{solutions && (
-          <div className="mt-10 w-full max-w-full sm:max-w-lg md:max-w-2xl lg:max-w-4xl">
-            <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
-              Your Solutions
-            </h2>
-            <div className="bg-white rounded-2xl shadow-xl p-6 sm:p-8">
-              <AnimatePresence>
-                {Object.entries(solutions).map(([key, { question, solution, links }]) => (
-                  <motion.div
-                    key={key}
-                    variants={cardVariants}
-                    initial="hidden"
-                    animate="visible"
-                    className="mb-6 pb-6 border-b last:border-b-0 border-gray-200"
-                  >
-                    <h3 className="text-xl font-semibold text-blue-700 mb-2">
-                      {key}: {question}
-                    </h3>
-                    <p className="text-gray-600 mt-2 whitespace-pre-wrap leading-relaxed">
-                      {solution}
-                    </p>
-                    {links && links.length > 0 ? (
-                      <div className="mt-4">
-                        <p className="text-sm font-semibold text-gray-800">Explore More:</p>
-                        <ul className="list-disc pl-6 text-sm text-gray-700">
-                          {links.map((link, linkIndex) => (
-                            <li key={linkIndex} className="flex items-center gap-3 mt-2">
-                              {linkStatus[link] === false ? (
-                                <>
-                                  <span className="text-gray-500 italic">
-                                    Resource unavailable: {link}
-                                  </span>
-                                  <motion.button
-                                    whileHover={{ scale: 1.1 }}
-                                    whileTap={{ scale: 0.9 }}
-                                    onClick={() => handleReportBrokenLink(link)}
-                                    className="text-red-500 hover:text-red-700 text-xs font-medium"
-                                  >
-                                    Report
-                                  </motion.button>
-                                </>
-                              ) : (
+          {solutions && (
+            <div className="mt-10 w-full max-w-full sm:max-w-lg md:max-w-2xl lg:max-w-4xl">
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 text-center">
+                Your Solutions
+              </h2>
+              <div className="bg-white rounded-2xl shadow-xl  items-center jus p-4 sm:p-6 md:p-8">
+                <AnimatePresence>
+                  {Object.entries(solutions).map(([key, { question, solution, links }]) => (
+                    <motion.div
+                      key={key}
+                      variants={cardVariants}
+                      initial="hidden"
+                      animate="visible"
+                      className="mb-4 sm:mb-6 pb-4 sm:pb-6 border-b last:border-b-0 border-gray-200"
+                    >
+                      <h3 className="text-lg sm:text-xl font-semibold text-blue-700 mb-2">
+                        {key}: {question}
+                      </h3>
+                      <p className="text-sm sm:text-base text-gray-600 mt-2 whitespace-pre-wrap leading-relaxed">
+                        {solution}
+                      </p>
+                      {links && links.length > 0 ? (
+                        <div className="mt-4">
+                          <p className="text-xs sm:text-sm font-semibold text-gray-800">
+                            Explore More:
+                          </p>
+                          <ul className="list-disc pl-4 sm:pl-6 text-xs sm:text-sm text-gray-700">
+                            {links.map((link, linkIndex) => (
+                              <li key={linkIndex} className="flex items-center gap-2 sm:gap-3 mt-2">
                                 <a
                                   href={link}
                                   target="_blank"
@@ -241,22 +227,21 @@ export default function TqSolver() {
                                 >
                                   {link}
                                 </a>
-                              )}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ) : (
-                      <p className="text-sm text-gray-500 mt-4 italic">
-                        No additional resources provided for this question.
-                      </p>
-                    )}
-                  </motion.div>
-                ))}
-              </AnimatePresence>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ) : (
+                        <p className="text-xs sm:text-sm text-gray-500 mt-4 italic">
+                          No additional resources provided for this question.
+                        </p>
+                      )}
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </div>
             </div>
-          </div>
-        )}
+          )}
         </div>
       </div>
     </>

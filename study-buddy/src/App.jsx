@@ -14,7 +14,7 @@ import Timetable from './Timetable.jsx';
 import Syllabus from './syllabus.jsx';
 import TqSolver from './tqsolver.jsx'; 
 import ErrorBoundary from './Errorboundary.jsx';
-
+import NoteGenerator from './NoteGenerator.jsx';
 // Load the PDF worker configuration early in the application lifecycle
 import './pdfWorker.js';
 
@@ -64,6 +64,8 @@ function App() {
             <Route path="/tqsolver" element={<TqSolver />} />
             {/* Catch-all route for 404 Not Found */}
             <Route path="*" element={<NotFound />} />
+            {/* Note Generator route */}
+            <Route path="/notegenerator" element={<NoteGenerator />} />
           </Routes>
         </main>
         {/* Footer is always present */}

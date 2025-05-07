@@ -23,9 +23,16 @@ import './pdfWorker.js';
 const Home = () => (
   <>
     <Header />
+    <div id='section1'>
     <Section1 />
+    </div>
+    <div id='section2'>
     <Section2 />
+    </div>
+    <div id='section3'>
     <Section3 />
+    </div>
+    
   </>
 );
 

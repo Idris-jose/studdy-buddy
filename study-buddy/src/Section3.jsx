@@ -138,25 +138,7 @@ const Section3 = () => {
           </a>
         </div>
         
-        {/* Testimonial/Statistics strip */}
-        <div className="mt-24 bg-blue-600 rounded-2xl shadow-xl p-8 text-white">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="col-span-1 md:col-span-2">
-              <h3 className="text-2xl font-bold mb-4">Join thousands of successful students</h3>
-              <p className="text-blue-100">
-                Our study planning system has helped students across 120+ universities improve their academic performance.
-              </p>
-            </div>
-            <div className="flex flex-col items-center justify-center">
-              <div className="text-4xl font-bold">15,000+</div>
-              <div className="text-blue-100">Active Students</div>
-            </div>
-            <div className="flex flex-col items-center justify-center">
-              <div className="text-4xl font-bold">97%</div>
-              <div className="text-blue-100">Satisfaction Rate</div>
-            </div>
-          </div>
-        </div>
+       
       </div>
     </section>
   );

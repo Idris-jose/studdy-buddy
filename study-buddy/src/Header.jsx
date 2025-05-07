@@ -1,26 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Menu, X, BookOpen, ChevronDown } from 'lucide-react';
+import { Link, Element } from 'react-scroll';
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Navigation links
+  // Navigation links updated for react-scroll
   const navLinks = [
-    { name: 'Features', path: '/features' },
-    { name: 'How It Works', path: '/how-it-works' },
-    { name: 'Pricing', path: '/pricing' },
-    { 
-      name: 'Resources', 
-      path: '#',
-      dropdown: true,
-      subLinks: [
-        { name: 'Study Tips', path: '/resources/study-tips' },
-        { name: 'Blog', path: '/blog' },
-        { name: 'Success Stories', path: '/success-stories' }
-      ]
-    }
+    { name: 'Features', section: 'section1' },
+    { name: 'How It Works', section: 'section2' },
+    { name: 'Resources', section: 'section3' },
   ];
 
   // Handle scroll effect
@@ -83,16 +74,20 @@ export default function Header() {
                     <ChevronDown className="w-4 h-4 ml-1" />
                   </button>
                 ) : (
-                  <NavLink
-                    to={link.path}
-                    className={({ isActive }) => `px-3 py-2 rounded-lg mx-1 hover:bg-white/10 ${
+                  <Link
+                    to={link.section}
+                    smooth={true}
+                    duration={500}
+                    offset={-60}
+                    className={`px-3 py-2 rounded-lg mx-1 hover:bg-white/10 cursor-pointer ${
                       scrolled 
-                        ? `${isActive ? 'text-blue-600 font-medium' : 'text-gray-700'} hover:text-blue-600` 
-                        : `${isActive ? 'text-white font-medium' : 'text-white/90'} hover:text-white`
+                        ? 'text-gray-700 hover:text-blue-600' 
+                        : 'text-white/90 hover:text-white'
                     }`}
+                    activeClass="text-blue-600 font-medium"
                   >
                     {link.name}
-                  </NavLink>
+                  </Link>
                 )}
                 
                 {/* Dropdown menu */}
@@ -184,15 +179,19 @@ export default function Header() {
                     </div>
                   </>
                 ) : (
-                  <NavLink
-                    to={link.path}
-                    className={({ isActive }) => `px-3 py-2 rounded-lg ${
-                      isActive ? 'text-blue-600 bg-blue-50 font-medium' : 'text-gray-700 hover:bg-gray-50'
+                  <Link
+                    to={link.section}
+                    smooth={true}
+                    duration={500}
+                    offset={-60}
+                    className={`px-3 py-2 rounded-lg ${
+                      scrolled ? 'text-gray-700 hover:bg-gray-50' : 'text-gray-600 hover:bg-gray-50'
                     }`}
+                    activeClass="text-blue-600 bg-blue-50 font-medium"
                     onClick={toggleMobileMenu}
                   >
                     {link.name}
-                  </NavLink>
+                  </Link>
                 )}
               </React.Fragment>
             ))}

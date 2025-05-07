@@ -89,6 +89,14 @@ export default function MainApp() {
       color: "green",
       path: "/tqsolver",
       icon: "🧩"
+    },
+    {
+      title: "Note Generator",
+      description: "Create concise, organized notes from your study materials to enhance retention.",
+      tagline: "Simplify your learning process!",
+      color: "yellow",
+      path: "/notegenerator",
+      icon: "🗒️"
     }
   ];
 

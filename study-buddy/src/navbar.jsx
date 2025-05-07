@@ -44,7 +44,7 @@ export default function Nav() {
   const dropdownItems = [
     { path: "/about", label: "About Us" },
     { path: "/contact", label: "Contact" },
-    { path: "/faq", label: "FAQ" }
+    
   ];
 
   return (

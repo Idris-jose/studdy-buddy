@@ -68,7 +68,7 @@ const SignUp = () => {
   };
 
   return (
-    <div className="min-h-screen mt-10 bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col relative overflow-hidden rounded-3xl">
+    <div className="min-h-screen  bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col relative overflow-hidden rounded-3xl">
       <svg
         className="absolute inset-0 w-full h-full pointer-events-none"
         style={{ opacity: 0.1 }}
@@ -81,8 +81,8 @@ const SignUp = () => {
       </svg>
 
       <main className="flex-1 flex flex-col items-center justify-center text-center px-4 py-8">
-        <h1 className="text-3xl md:text-4xl font-bold text-indigo-600 mb-2">
-          Join School Buddy Today!
+        <h1 className="text-3xl md:text-4xl  font-bold text-indigo-600 mb-2">
+          Join Study Buddy Today!
         </h1>
         <p className="text-gray-700 mb-8 max-w-md">
           Your ultimate companion for organizing school schedules, tracking assignments, and boosting your grades.

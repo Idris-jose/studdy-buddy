@@ -24,7 +24,7 @@ export default function Section1() {
   ];
 
   return (
-    <section className="relative px-6 py-20 overflow-hidden bg-gradient-to-b from-white to-blue-50">
+    <section id='section1' className="relative px-6 py-20 overflow-hidden bg-gradient-to-b from-white to-blue-50">
       {/* Decorative elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
         <div className="absolute top-20 left-10 w-64 h-64 bg-blue-100 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
@@ -52,7 +52,7 @@ export default function Section1() {
             
             <div className="flex flex-col sm:flex-row gap-4 mb-12">
               <NavLink
-                to="/demo"
+                to="/signup"
                 className="bg-blue-600 text-white px-8 py-4 rounded-lg font-medium hover:bg-blue-700 focus:ring-4 focus:ring-blue-300 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center"
                 aria-label="Request a demo of Study Buddy"
               >

@@ -2,19 +2,20 @@ import Nav from "./navbar.jsx";
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from "react";
 import confetti from 'canvas-confetti';
+import { useTheme } from './themecontext.jsx';
 
 export default function TqSolver() {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [solutions, setSolutions] = useState(null);
-  const [theme, setTheme] = useState("galaxy"); // galaxy, ocean, forest, sunset
   const [dragActive, setDragActive] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState(0);
 
+  const { theme, themeColors } = useTheme();
+
   console.log("TqSolver component mounted");
 
-  // Progress bar simulation during loading
   useEffect(() => {
     let interval;
     if (loading) {
@@ -27,35 +28,9 @@ export default function TqSolver() {
     } else {
       setLoadingProgress(0);
     }
-    
     return () => clearInterval(interval);
   }, [loading]);
 
-  // Theme background gradients
-  const themeStyles = {
-    galaxy: "bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-800",
-    ocean: "bg-gradient-to-br from-blue-900 via-teal-800 to-blue-700",
-    forest: "bg-gradient-to-br from-green-900 via-emerald-800 to-teal-700",
-    sunset: "bg-gradient-to-br from-orange-700 via-red-600 to-pink-700"
-  };
-
-  // Theme text colors
-  const themeTextColors = {
-    galaxy: "text-purple-300",
-    ocean: "text-teal-300",
-    forest: "text-emerald-300",
-    sunset: "text-orange-300"
-  };
-
-  // Theme accent colors
-  const themeAccentColors = {
-    galaxy: "from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600",
-    ocean: "from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600",
-    forest: "from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600",
-    sunset: "from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600"
-  };
-
-  // Animation variants
   const buttonVariants = {
     hover: { scale: 1.05, transition: { duration: 0.3 } },
     tap: { scale: 0.95, transition: { duration: 0.2 } },
@@ -85,12 +60,6 @@ export default function TqSolver() {
     hover: { rotate: [0, -10, 10, -5, 5, 0], transition: { duration: 0.5 } }
   };
 
-  const themeButtonVariants = {
-    hover: { y: -3, boxShadow: "0px 10px 15px rgba(0, 0, 0, 0.1)" },
-    tap: { y: 0, boxShadow: "0px 0px 0px rgba(0, 0, 0, 0.0)" }
-  };
-
-  // Function to trigger confetti when solutions are loaded
   const celebrateSuccess = () => {
     confetti({
       particleCount: 100,
@@ -134,7 +103,6 @@ export default function TqSolver() {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const droppedFile = e.dataTransfer.files[0];
       if (droppedFile.type !== "application/pdf") {
@@ -157,51 +125,39 @@ export default function TqSolver() {
       setError("Please upload a .pdf file first.");
       return;
     }
-
     setLoading(true);
     setError("");
     setSolutions(null);
-
     try {
       console.log("Uploading PDF file...");
       const formData = new FormData();
       formData.append('file', file);
-
       const response = await fetch('http://localhost:5000/upload', {
         method: 'POST',
         body: formData,
       });
-
       console.log("Backend response status:", response.status);
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to process PDF');
       }
-
       const data = await response.json();
       console.log("Backend data:", data);
-
       if (!data.solutions || typeof data.solutions !== "object") {
         throw new Error("Invalid solutions format returned from backend.");
       }
-
       const isValidSolution = Object.values(data.solutions).every(
         (item) => item && typeof item === "object" && "question" in item && "solution" in item
       );
-
       if (!isValidSolution) {
         throw new Error("Backend returned solutions in unexpected format.");
       }
-
       console.log("Parsed solutions:", data.solutions);
-      
-      // Short delay to complete progress animation
       setTimeout(() => {
         setSolutions(data.solutions);
         setLoadingProgress(100);
         celebrateSuccess();
       }, 500);
-      
     } catch (err) {
       setError(`Error: ${err.message}`);
       console.error("Error details:", err);
@@ -212,75 +168,69 @@ export default function TqSolver() {
     }
   };
 
+  const handleCopySolutions = () => {
+    const solutionsText = Object.entries(solutions)
+      .map(([key, { question, solution, links }]) => {
+        let text = `${key}: ${question}\nSolution: ${solution}`;
+        if (links && links.length > 0) {
+          text += `\nExplore More:\n${links.join('\n')}`;
+        }
+        return text;
+      })
+      .join('\n\n');
+    navigator.clipboard.writeText(solutionsText);
+    const notification = document.getElementById('copy-notification');
+    if (notification) {
+      notification.classList.remove('opacity-0');
+      setTimeout(() => notification.classList.add('opacity-0'), 2000);
+    }
+  };
+
+  const handleDownloadSolutions = () => {
+    const solutionsText = Object.entries(solutions)
+      .map(([key, { question, solution, links }]) => {
+        let text = `${key}: ${question}\nSolution: ${solution}`;
+        if (links && links.length > 0) {
+          text += `\nExplore More:\n${links.join('\n')}`;
+        }
+        return text;
+      })
+      .join('\n\n');
+    const element = document.createElement("a");
+    const file = new Blob([solutionsText], { type: 'text/plain' });
+    element.href = URL.createObjectURL(file);
+    element.download = "solutions.txt";
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  };
+
   return (
     <>
       <Nav />
-      <div className={`min-h-screen mt-15 ${themeStyles[theme]} text-white flex flex-col items-center justify-center p-4 transition-colors duration-700`}>
-        {/* Theme switcher */}
-        <div className="absolute top-20 right-4 flex space-x-2">
-          <motion.button 
-            variants={themeButtonVariants}
-            whileHover="hover"
-            whileTap="tap"
-            onClick={() => setTheme("galaxy")}
-            className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-900 to-purple-800 border-2 border-indigo-300"
-            aria-label="Galaxy theme"
-          />
-          <motion.button 
-            variants={themeButtonVariants}
-            whileHover="hover"
-            whileTap="tap"
-            onClick={() => setTheme("ocean")}
-            className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-800 to-teal-700 border-2 border-blue-300"
-            aria-label="Ocean theme"
-          />
-          <motion.button 
-            variants={themeButtonVariants}
-            whileHover="hover"
-            whileTap="tap"
-            onClick={() => setTheme("forest")}
-            className="w-8 h-8 rounded-full bg-gradient-to-br from-green-800 to-emerald-700 border-2 border-green-300"
-            aria-label="Forest theme"
-          />
-          <motion.button 
-            variants={themeButtonVariants}
-            whileHover="hover"
-            whileTap="tap"
-            onClick={() => setTheme("sunset")}
-            className="w-8 h-8 rounded-full bg-gradient-to-br from-orange-700 to-pink-600 border-2 border-orange-300"
-            aria-label="Sunset theme"
-          />
-        </div>
-        
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+      <div className={`min-h-screen mt-15 bg-gradient-to-br ${themeColors[theme].bg} text-white flex flex-col items-center justify-center p-4 transition-colors duration-700`}>
+        <motion.h1
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6, ease: 'easeOut' }}
+          className={`text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r ${themeColors[theme].gradient} mb-6 text-center`}
         >
-          <motion.h1
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, ease: 'easeOut' }}
-            className={`text-4xl sm:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r ${themeAccentColors[theme]} mb-6 text-center`}
-          >
-            Master Your Tutorial Questions
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            className={`text-base sm:text-lg ${themeTextColors[theme]} mb-8 text-center max-w-lg sm:max-w-2xl`}
-          >
-            Upload a PDF with your questions to receive detailed solutions and curated resources from trusted platforms like Khan Academy or MIT OpenCourseWare. Tip: Structure your PDF with clear, numbered questions for the best results!
-          </motion.p>
-        </motion.div>
+          Master Your Tutorial Questions
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.6 }}
+          className={`text-base sm:text-lg ${themeColors[theme].text} mb-8 text-center max-w-lg sm:max-w-2xl`}
+        >
+          Upload a PDF with your questions to receive detailed solutions and curated resources from trusted platforms like Khan Academy or MIT OpenCourseWare. Tip: Structure your PDF with clear, numbered questions for the best results!
+        </motion.p>
 
         <div className="w-full max-w-sm sm:max-w-md space-y-4">
-          <div className={`text-xs sm:text-sm ${themeTextColors[theme]} text-center`}>
+          <div className={`text-xs sm:text-sm ${themeColors[theme].text} text-center`}>
             Upload a .pdf file with questions (e.g., "Q1: What is 2 + 2?").
           </div>
           
-          {/* Drag and drop area */}
           <div 
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
@@ -289,7 +239,7 @@ export default function TqSolver() {
             className={`relative border-dashed border-2 rounded-lg p-6 text-center transition-all duration-300 ${
               dragActive 
                 ? 'border-white bg-opacity-20 bg-white' 
-                : `border-${themeTextColors[theme].split('-')[1]}-400 bg-opacity-10 bg-white`
+                : `border-${themeColors[theme].border.split('-')[1]}-400 bg-opacity-10 bg-white`
             }`}
           >
             <motion.div 
@@ -300,7 +250,7 @@ export default function TqSolver() {
             >
               <motion.svg 
                 variants={fileIconVariants}
-                className={`w-12 h-12 mb-3 ${themeTextColors[theme]}`} 
+                className={`w-12 h-12 mb-3 ${themeColors[theme].text}`} 
                 fill="none" 
                 stroke="currentColor" 
                 viewBox="0 0 24 24" 
@@ -308,14 +258,11 @@ export default function TqSolver() {
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
               </motion.svg>
-              
-              <p className={`${themeTextColors[theme]} font-medium mb-2`}>
+              <p className={`${themeColors[theme].text} font-medium mb-2`}>
                 {dragActive ? "Drop your PDF here" : "Drag & drop your PDF here"}
               </p>
-              
               <p className="text-white text-opacity-70 text-sm mb-4">or</p>
-              
-              <label className={`cursor-pointer py-2 px-6 rounded-full bg-gradient-to-r ${themeAccentColors[theme]} hover:shadow-lg transition duration-300 text-white font-semibold`}>
+              <label className={`cursor-pointer py-2 px-6 rounded-full bg-gradient-to-r ${themeColors[theme].gradient} ${themeColors[theme].hover} text-white font-semibold`}>
                 Browse Files
                 <input
                   type="file"
@@ -331,7 +278,7 @@ export default function TqSolver() {
             <motion.div 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`flex items-center bg-white bg-opacity-10 rounded-lg p-3 text-xs sm:text-sm ${themeTextColors[theme]}`}
+              className={`flex items-center bg-white/10 backdrop-blur-md border ${themeColors[theme].border} rounded-lg p-3 text-xs sm:text-sm ${themeColors[theme].text}`}
             >
               <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -357,7 +304,7 @@ export default function TqSolver() {
                 initial="hidden"
                 animate="visible"
                 exit="exit"
-                className="bg-red-900 bg-opacity-60 border border-red-500 text-red-200 text-xs sm:text-sm p-3 rounded-lg flex items-center"
+                className="bg-red-50 border border-red-500 text-red-500 text-xs sm:text-sm p-3 rounded-lg flex items-center"
               >
                 <svg className="w-5 h-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -375,12 +322,12 @@ export default function TqSolver() {
               className="space-y-2"
             >
               <div className="flex items-center justify-between">
-                <span className={`text-xs ${themeTextColors[theme]}`}>Analyzing questions...</span>
-                <span className={`text-xs ${themeTextColors[theme]}`}>{Math.round(loadingProgress)}%</span>
+                <span className={`text-xs ${themeColors[theme].text}`}>Analyzing questions...</span>
+                <span className={`text-xs ${themeColors[theme].text}`}>{Math.round(loadingProgress)}%</span>
               </div>
               <div className="h-2 bg-white bg-opacity-20 rounded-full overflow-hidden">
                 <motion.div 
-                  className={`h-full bg-gradient-to-r ${themeAccentColors[theme]}`}
+                  className={`h-full bg-gradient-to-r ${themeColors[theme].gradient}`}
                   initial={{ width: "0%" }}
                   animate={{ width: `${loadingProgress}%` }}
                   transition={{ ease: "easeInOut" }}
@@ -390,7 +337,7 @@ export default function TqSolver() {
                 {[0, 1, 2].map((i) => (
                   <motion.div
                     key={i}
-                    className={`w-2 h-2 rounded-full bg-gradient-to-r ${themeAccentColors[theme]}`}
+                    className={`w-2 h-2 rounded-full bg-gradient-to-r ${themeColors[theme].gradient}`}
                     animate={{
                       scale: [1, 1.5, 1],
                       opacity: [0.7, 1, 0.7],
@@ -416,7 +363,7 @@ export default function TqSolver() {
               className={`w-full py-3.5 rounded-lg font-bold text-white transition-all duration-300 shadow-lg ${
                 loading
                   ? "bg-gray-400 cursor-not-allowed"
-                  : `bg-gradient-to-r ${themeAccentColors[theme]} shadow-${themeTextColors[theme].split('-')[1]}-500/30`
+                  : `bg-gradient-to-r ${themeColors[theme].gradient} ${themeColors[theme].hover} shadow-${themeColors[theme].border.split('-')[1]}-500/30`
               }`}
             >
               <span className="flex items-center justify-center">
@@ -436,91 +383,122 @@ export default function TqSolver() {
 
           {solutions && (
             <motion.div 
+              className="mt-10 w-full max-w-3xl"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
-              className="mt-10 w-full max-w-full sm:max-w-lg md:max-w-2xl lg:max-w-4xl"
+              transition={{ duration: 0.6 }}
             >
               <motion.h2 
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className={`text-2xl sm:text-3xl font-bold ${themeTextColors[theme]} mb-6 text-center flex justify-center items-center`}
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.3, duration: 0.5 }}
+                className={`text-3xl font-bold ${themeColors[theme].text} mb-6 text-center flex justify-center items-center`}
               >
                 <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                 </svg>
                 Your Solutions
               </motion.h2>
-              <motion.div 
-                className="bg-white bg-opacity-10 backdrop-blur-md rounded-2xl shadow-xl p-4 sm:p-6 md:p-8 border border-white border-opacity-20"
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-              >
-                <AnimatePresence>
-                  {Object.entries(solutions).map(([key, { question, solution, links }], i) => (
-                    <motion.div
-                      key={key}
-                      custom={i}
-                      variants={cardVariants}
-                      initial="hidden"
-                      animate="visible"
-                      className="mb-4 sm:mb-6 pb-4 text-black sm:pb-6 border-b last:border-b-0 border-white border-opacity-10"
+              <div className={`bg-white/10 backdrop-blur-md border ${themeColors[theme].border} rounded-2xl shadow-xl p-6 sm:p-8`}>
+                <div className="flex justify-between items-center mb-4 pb-4 border-b border-white/10">
+                  <p className={`${themeColors[theme].text} font-semibold`}>Generated from: {file?.name}</p>
+                  <div className="flex gap-2">
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      className="p-2 rounded-full bg-white/10 hover:bg-white/20"
+                      title="Copy to clipboard"
+                      onClick={handleCopySolutions}
                     >
-                      <div className="flex items-start">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-r ${themeAccentColors[theme]} mr-3 flex-shrink-0 mt-1`}>
-                          {key.replace("Q", "")}
-                        </div>
-                        <div>
-                          <h3 className="text-lg sm:text-xl font-semibold text-blue-600 mb-2">
-                            {question}
-                          </h3>
-                          <div className="bg-white bg-opacity-5 rounded-lg p-4 mt-3">
-                            <p className="text-sm sm:text-base text-black text-opacity-90 whitespace-pre-wrap leading-relaxed">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                        <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+                      </svg>
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      className="p-2 rounded-full bg-white/10 hover:bg-white/20"
+                      title="Download as text file"
+                      onClick={handleDownloadSolutions}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                        <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                      </svg>
+                    </motion.button>
+                  </div>
+                  <div id="copy-notification" className="fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg transition-opacity duration-300 opacity-0">
+                    Copied to clipboard!
+                  </div>
+                </div>
+                <motion.div 
+                  variants={cardVariants}
+                  initial="hidden"
+                  animate="visible"
+                  className={`${themeColors[theme].text} whitespace-pre-wrap leading-relaxed py-2 px-4 max-h-[50vh] overflow-y-auto`}
+                >
+                  <AnimatePresence>
+                    {Object.entries(solutions).map(([key, { question, solution, links }], i) => (
+                      <motion.div
+                        key={key}
+                        custom={i}
+                        variants={cardVariants}
+                        initial="hidden"
+                        animate="visible"
+                        className="mb-4 sm:mb-6 pb-4 sm:pb-6 border-b last:border-b-0 border-white/10"
+                      >
+                        <div className="flex items-start">
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-r ${themeColors[theme].gradient} mr-3 flex-shrink-0 mt-1 text-white`}>
+                            {key.replace("Q", "")}
+                          </div>
+                          <div>
+                            <h3 className={`text-lg sm:text-xl font-semibold ${themeColors[theme].text} mb-2`}>
+                              {question}
+                            </h3>
+                            <p className={`text-sm sm:text-base ${themeColors[theme].text} whitespace-pre-wrap leading-relaxed`}>
                               {solution}
                             </p>
-                          </div>
-                          
-                          {links && links.length > 0 ? (
-                            <motion.div 
-                              initial={{ opacity: 0, height: 0 }}
-                              animate={{ opacity: 1, height: "auto" }}
-                              transition={{ delay: 0.7 + (i * 0.1), duration: 0.3 }}
-                              className="mt-4"
-                            >
-                              <p className={`text-xs sm:text-sm font-semibold ${themeTextColors[theme]}`}>
-                                Explore More:
+                            {links && links.length > 0 ? (
+                              <motion.div 
+                                initial={{ opacity: 0, height: 0 }}
+                                animate={{ opacity: 1, height: "auto" }}
+                                transition={{ delay: 0.7 + (i * 0.1), duration: 0.3 }}
+                                className="mt-4"
+                              >
+                                <p className={`text-xs sm:text-sm font-semibold ${themeColors[theme].text}`}>
+                                  Explore More:
+                                </p>
+                                <div className="mt-2 space-y-2">
+                                  {links.map((link, linkIndex) => (
+                                    <motion.a
+                                      key={linkIndex}
+                                      whileHover={{ x: 5 }}
+                                      href={link}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className={`flex items-center text-xs sm:text-sm ${themeColors[theme].text} hover:text-blue-300 transition`}
+                                    >
+                                      <svg className="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                      </svg>
+                                      {link}
+                                    </motion.a>
+                                  ))}
+                                </div>
+                              </motion.div>
+                            ) : (
+                              <p className={`text-xs sm:text-sm ${themeColors[theme].text} text-opacity-60 mt-4 italic`}>
+                                No additional resources provided for this question.
                               </p>
-                              <div className="mt-2 space-y-2">
-                                {links.map((link, linkIndex) => (
-                                  <motion.a
-                                    key={linkIndex}
-                                    whileHover={{ x: 5 }}
-                                    href={link}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="flex items-center text-xs sm:text-sm text-white hover:text-blue-300 transition"
-                                  >
-                                    <svg className="w-4 h-4 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-                                    </svg>
-                                    {link}
-                                  </motion.a>
-                                ))}
-                              </div>
-                            </motion.div>
-                          ) : (
-                            <p className="text-xs sm:text-sm text-white text-opacity-60 mt-4 italic">
-                              No additional resources provided for this question.
-                            </p>
-                          )}
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </motion.div>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </motion.div>
+              </div>
             </motion.div>
           )}
         </div>

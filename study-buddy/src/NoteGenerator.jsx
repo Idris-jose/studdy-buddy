@@ -2,57 +2,17 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Nav from './navbar.jsx';
 import confetti from 'canvas-confetti';
+import { useTheme } from './themecontext.jsx';
 
 export default function NoteGenerator() {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [notes, setNotes] = useState('');
-  const [theme, setTheme] = useState('galaxy'); // Theme options: galaxy, forest, ocean, sunset
   const [dragActive, setDragActive] = useState(false);
   const [showTips, setShowTips] = useState(false);
 
-  // Theme configurations
-  const themes = {
-    galaxy: {
-      bg: "bg-gradient-to-br from-purple-900 via-indigo-800 to-blue-900",
-      card: "bg-indigo-900/40 backdrop-blur-md border border-indigo-500/30",
-      heading: "bg-gradient-to-r from-pink-400 via-purple-400 to-indigo-400",
-      button: "bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700",
-      text: "text-indigo-100",
-      highlight: "text-pink-300",
-      icon: "🌌"
-    },
-    forest: {
-      bg: "bg-gradient-to-br from-green-900 via-emerald-800 to-teal-900",
-      card: "bg-emerald-900/40 backdrop-blur-md border border-emerald-500/30",
-      heading: "bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400",
-      button: "bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700",
-      text: "text-emerald-100",
-      highlight: "text-teal-300",
-      icon: "🌳"
-    },
-    ocean: {
-      bg: "bg-gradient-to-br from-blue-900 via-cyan-800 to-teal-900",
-      card: "bg-blue-900/40 backdrop-blur-md border border-blue-500/30",
-      heading: "bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-400",
-      button: "bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700",
-      text: "text-blue-100",
-      highlight: "text-cyan-300",
-      icon: "🌊"
-    },
-    sunset: {
-      bg: "bg-gradient-to-br from-red-900 via-orange-800 to-amber-900",
-      card: "bg-orange-900/40 backdrop-blur-md border border-orange-500/30",
-      heading: "bg-gradient-to-r from-red-400 via-orange-400 to-amber-400",
-      button: "bg-gradient-to-r from-red-500 to-orange-600 hover:from-red-600 hover:to-orange-700",
-      text: "text-orange-100",
-      highlight: "text-amber-300",
-      icon: "🌅"
-    }
-  };
-
-  const currentTheme = themes[theme];
+  const { theme, themeColors, changeTheme } = useTheme();
 
   // Animation variants
   const buttonVariants = {
@@ -206,25 +166,15 @@ export default function NoteGenerator() {
   return (
     <>
       <Nav />
-      <div className={`min-h-screen ${currentTheme.bg} flex flex-col items-center justify-center p-6`}>
-        <div className="absolute top-20 right-6 flex gap-2 z-10">
-          {Object.keys(themes).map((themeName) => (
-            <motion.button
-              key={themeName}
-              whileHover={{ scale: 1.2 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={() => setTheme(themeName)}
-              className={`w-10 h-10 rounded-full flex items-center justify-center text-xl
-                ${theme === themeName ? 'ring-4 ring-white' : ''}`}
-              style={{
-                background: themes[themeName].bg.replace('bg-', ''),
-                opacity: theme === themeName ? 1 : 0.6
-              }}
-            >
-              {themes[themeName].icon}
-            </motion.button>
-          ))}
-        </div>
+      <div className={`min-h-screen bg-gradient-to-br mt-15 ${themeColors[theme].bg} flex flex-col items-center justify-center p-6 transition-colors duration-700`}>
+        <motion.div 
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="absolute top-20 right-6 z-10"
+        >
+         
+        </motion.div>
 
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
@@ -239,8 +189,8 @@ export default function NoteGenerator() {
               onChange={() => setShowTips(!showTips)} 
               className="sr-only peer"
             />
-            <div className="relative w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-white/30 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-            <span className={`ms-3 text-sm font-medium ${currentTheme.text}`}>Study Tips</span>
+            <div className="relative w-11 h-6 bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-white/30 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-gray-600"></div>
+            <span className={`ms-3 text-sm font-medium ${themeColors[theme].text}`}>Study Tips</span>
           </label>
         </motion.div>
 
@@ -248,7 +198,7 @@ export default function NoteGenerator() {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
-          className={`text-5xl font-extrabold text-transparent bg-clip-text ${currentTheme.heading} mb-6 text-center`}
+          className={`text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r ${themeColors[theme].gradient} mb-6 text-center`}
         >
           Smart Study Notes
         </motion.h1>
@@ -257,7 +207,7 @@ export default function NoteGenerator() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.6 }}
-          className={`text-lg ${currentTheme.text} mb-8 text-center max-w-2xl`}
+          className={`text-lg ${themeColors[theme].text} mb-8 text-center max-w-2xl`}
         >
           Transform your PDFs into comprehensive study notes with our AI-powered tool. Perfect for exam preparation!
         </motion.p>
@@ -266,31 +216,31 @@ export default function NoteGenerator() {
           <motion.div
             variants={floatingVariants}
             animate="animate"
-            className={`${currentTheme.card} rounded-xl p-4 mb-8 max-w-lg shadow-lg`}
+            className={`bg-white/10 backdrop-blur-md border ${themeColors[theme].border} rounded-xl p-4 mb-8 max-w-lg shadow-lg`}
           >
             <div className="flex items-center gap-3">
               <span className="text-2xl">💡</span>
-              <p id="study-tip" className={`${currentTheme.highlight} font-medium`}>
+              <p id="study-tip" className={`${themeColors[theme].text} font-medium`}>
                 {getRandomTip()}
               </p>
             </div>
           </motion.div>
         )}
 
-        <div className={`w-full max-w-lg ${currentTheme.card} rounded-2xl shadow-xl p-8`}>
+        <div className={`w-full max-w-lg bg-white/10 backdrop-blur-md border ${themeColors[theme].border} rounded-2xl shadow-xl p-8`}>
           <div className="space-y-6">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
-              className={`text-sm ${currentTheme.text} text-center`}
+              className={`text-sm ${themeColors[theme].text} text-center`}
             >
               Upload a .pdf file to generate notes (max 5MB).
             </motion.div>
             
             <motion.div
               onDragEnter={handleDrag}
-              className={`${dragActive ? `border-dashed border-4 ${currentTheme.highlight} bg-opacity-20` : `border-dotted border-2 ${currentTheme.text} bg-opacity-10`} 
+              className={`${dragActive ? `border-dashed border-4 ${themeColors[theme].text} bg-opacity-20` : `border-dotted border-2 ${themeColors[theme].text} bg-opacity-10`} 
                 w-full rounded-xl transition-all duration-300 text-center flex flex-col items-center justify-center py-10 px-6 cursor-pointer relative overflow-hidden`}
             >
               {dragActive && (
@@ -318,7 +268,7 @@ export default function NoteGenerator() {
                 variants={buttonVariants}
                 whileHover="hover"
                 whileTap="tap"
-                className={`cursor-pointer ${currentTheme.text} font-semibold`}
+                className={`cursor-pointer ${themeColors[theme].text} font-semibold`}
               >
                 {dragActive ? "Drop your PDF file here" : (file ? "Change file" : "Browse or drag & drop your PDF")}
                 <input
@@ -334,12 +284,12 @@ export default function NoteGenerator() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className={`text-sm ${currentTheme.text} p-3 rounded-lg flex items-center justify-between ${currentTheme.card}`}
+                className={`text-sm ${themeColors[theme].text} p-3 rounded-lg flex items-center justify-between bg-white/10 backdrop-blur-md border ${themeColors[theme].border}`}
               >
                 <div className="flex items-center">
                   <span className="text-xl mr-2">📄</span>
                   <div>
-                    <p className={`font-semibold ${currentTheme.highlight}`}>{file.name}</p>
+                    <p className={`font-semibold ${themeColors[theme].text}`}>{file.name}</p>
                     <p className="text-xs opacity-80">{(file.size / 1024).toFixed(2)} KB</p>
                   </div>
                 </div>
@@ -359,7 +309,7 @@ export default function NoteGenerator() {
                   initial="hidden"
                   animate="visible"
                   exit="hidden"
-                  className="text-red-400 text-sm text-center bg-red-900/30 p-3 rounded-lg border border-red-500/20"
+                  className="text-red-500 text-sm text-center bg-red-50 p-3 rounded-lg"
                 >
                   {error}
                 </motion.p>
@@ -382,7 +332,7 @@ export default function NoteGenerator() {
                       repeat: Infinity,
                       ease: "linear"
                     }}
-                    className="absolute inset-0 rounded-full border-t-2 border-b-2 border-purple-400"
+                    className={`absolute inset-0 rounded-full border-t-2 border-b-2 ${themeColors[theme].border}`}
                   ></motion.div>
                   <motion.div
                     animate={{
@@ -393,11 +343,11 @@ export default function NoteGenerator() {
                       repeat: Infinity,
                       ease: "linear"
                     }}
-                    className="absolute inset-2 rounded-full border-r-2 border-l-2 border-pink-400"
+                    className={`absolute inset-2 rounded-full border-r-2 border-l-2 ${themeColors[theme].border}`}
                   ></motion.div>
                 </div>
-                <span className={`${currentTheme.highlight} font-medium`}>Creating your smart notes...</span>
-                <p className={`text-xs ${currentTheme.text} max-w-xs text-center`}>
+                <span className={`${themeColors[theme].text} font-medium`}>Creating your smart notes...</span>
+                <p className={`text-xs ${themeColors[theme].text} max-w-xs text-center`}>
                   Our AI is analyzing your document, extracting key concepts, and organizing the information.
                 </p>
               </motion.div>
@@ -413,7 +363,7 @@ export default function NoteGenerator() {
                 className={`w-full py-3 rounded-xl font-bold text-white shadow-lg transition-all duration-300 ${
                   loading
                     ? 'bg-gray-500 cursor-not-allowed'
-                    : `${currentTheme.button}`
+                    : `bg-gradient-to-r ${themeColors[theme].gradient} ${themeColors[theme].hover}`
                 }`}
               >
                 Generate Smart Notes
@@ -430,25 +380,24 @@ export default function NoteGenerator() {
             transition={{ duration: 0.6 }}
           >
             <motion.h2 
-              className={`text-3xl font-bold text-transparent bg-clip-text ${currentTheme.heading} mb-6 text-center`}
+              className={`text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r ${themeColors[theme].gradient} mb-6 text-center`}
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.3, duration: 0.5 }}
             >
               Your Smart Study Notes
             </motion.h2>
-            <div className={`${currentTheme.card} rounded-2xl shadow-xl p-6 sm:p-8`}>
+            <div className={`bg-white/10 backdrop-blur-md border ${themeColors[theme].border} rounded-2xl shadow-xl p-6 sm:p-8`}>
               <div className="flex justify-between items-center mb-4 pb-4 border-b border-white/10">
-                <p className={`${currentTheme.highlight} font-semibold`}>Generated from: {file?.name}</p>
+                <p className={`${themeColors[theme].text} font-semibold`}>Generated from: {file?.name}</p>
                 <div className="flex gap-2">
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white"
+                    className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-black"
                     title="Copy to clipboard"
                     onClick={() => {
                       navigator.clipboard.writeText(notes);
-                      // Show copy notification
                       const notification = document.getElementById('copy-notification');
                       if (notification) {
                         notification.classList.remove('opacity-0');
@@ -464,7 +413,7 @@ export default function NoteGenerator() {
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white"
+                    className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-black"
                     title="Download as text file"
                     onClick={() => {
                       const element = document.createElement("a");
@@ -490,7 +439,7 @@ export default function NoteGenerator() {
                 variants={cardVariants}
                 initial="hidden"
                 animate="visible"
-                className={`${currentTheme.text} whitespace-pre-wrap leading-relaxed py-2 px-4 max-h-[50vh] overflow-y-auto`}
+                className={`${themeColors[theme].text} whitespace-pre-wrap leading-relaxed py-2 px-4 max-h-[50vh] overflow-y-auto`}
               >
                 {notes}
               </motion.div>

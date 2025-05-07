@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BookOpen, Calendar, Globe, CheckCircle, AlertCircle, Award, ChevronDown, ChevronUp, Download, Book, Coffee, Zap } from 'lucide-react';
 import Nav from './navbar.jsx';
+import { useTheme } from './themecontext.jsx';
 
 export default function SyllabusInput() {
   const location = useLocation();
@@ -17,72 +18,17 @@ export default function SyllabusInput() {
   const [error, setError] = useState('');
   const [expandedWeek, setExpandedWeek] = useState(null);
   const [generationComplete, setGenerationComplete] = useState(false);
-  const [themeColor, setThemeColor] = useState('blue');
 
-  // Gemini API key from environment variable
+  const { theme, themeColors } = useTheme();
+
   const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
-  // Redirect to course input if no courses are available
   useEffect(() => {
     if (courses.length === 0) {
       setError('No courses available. Please add courses first.');
     }
   }, [courses]);
 
-  // Get theme colors based on selected course
-  useEffect(() => {
-    if (selectedCourse) {
-      const courseIndex = courses.findIndex(course => course.courseCode === selectedCourse);
-      const themes = ['blue', 'purple', 'emerald', 'amber', 'rose'];
-      setThemeColor(themes[courseIndex % themes.length]);
-    }
-  }, [selectedCourse, courses]);
-
-  // Theme color mappings
-  const themeColors = {
-    blue: {
-      primary: 'from-blue-500 to-blue-700',
-      secondary: 'bg-blue-100 text-blue-800',
-      accent: 'text-blue-600',
-      border: 'border-blue-200',
-      button: 'from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800',
-      link: 'text-blue-500'
-    },
-    purple: {
-      primary: 'from-purple-500 to-purple-700',
-      secondary: 'bg-purple-100 text-purple-800',
-      accent: 'text-purple-600',
-      border: 'border-purple-200',
-      button: 'from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800',
-      link: 'text-purple-500'
-    },
-    emerald: {
-      primary: 'from-emerald-500 to-emerald-700',
-      secondary: 'bg-emerald-100 text-emerald-800',
-      accent: 'text-emerald-600',
-      border: 'border-emerald-200',
-      button: 'from-emerald-500 to-emerald-700 hover:from-emerald-600 hover:to-emerald-800',
-      link: 'text-emerald-500'
-    },
-    amber: {
-      primary: 'from-amber-500 to-amber-700',
-      secondary: 'bg-amber-100 text-amber-800',
-      accent: 'text-amber-600',
-      border: 'border-amber-200',
-      button: 'from-amber-500 to-amber-700 hover:from-amber-600 hover:to-amber-800',
-      link: 'text-amber-500'
-    },
-    rose: {
-      primary: 'from-rose-500 to-rose-700',
-      secondary: 'bg-rose-100 text-rose-800',
-      accent: 'text-rose-600',
-      border: 'border-rose-200',
-      button: 'from-rose-500 to-rose-700 hover:from-rose-600 hover:to-rose-800',
-      link: 'text-rose-500'
-    }
-  };
-
-  // Animation variants
   const inputVariants = {
     focus: { scale: 1.02, borderColor: '#3B82F6', transition: { duration: 0.2 } },
     blur: { scale: 1, borderColor: '#D1D5DB', transition: { duration: 0.2 } },
@@ -162,7 +108,6 @@ export default function SyllabusInput() {
     setSyllabus([]);
     setGenerationComplete(false);
 
-    // Validation
     if (!selectedCourse) {
       setError('Please select a course.');
       return;
@@ -190,7 +135,6 @@ export default function SyllabusInput() {
       (course) => course.courseCode === selectedCourse
     );
 
-    // Construct prompt for Gemini API
     const prompt = `
       Generate a creative and engaging reading syllabus for the course "${selectedCourseData.courseName}" (Code: ${selectedCourseData.courseCode}) with the following topics: "${topics[0]}", "${topics[1]}", "${topics[2]}". 
       The syllabus is for a 4-week period, with weekly readings or resources for each topic.
@@ -251,7 +195,6 @@ export default function SyllabusInput() {
 
       setSyllabus(parsedSyllabus);
       setGenerationComplete(true);
-      // Auto-expand first week
       setExpandedWeek(1);
     } catch (err) {
       setError(`Failed to generate syllabus: ${err.message}`);
@@ -261,35 +204,24 @@ export default function SyllabusInput() {
     }
   };
 
-  // Function to generate PDF (mock for now)
   const handleDownloadPDF = () => {
     alert('PDF download feature would be implemented here!');
   };
 
-  // Function to randomize topics for inspiration
   const generateRandomTopics = () => {
     const exampleTopics = [
-      // Computer Science
       ['Artificial Intelligence', 'Machine Learning', 'Neural Networks'],
       ['Data Structures', 'Algorithms', 'Computational Complexity'],
       ['Cloud Computing', 'Serverless Architecture', 'DevOps'],
       ['Blockchain', 'Cryptocurrency', 'Smart Contracts'],
-      
-      // Business
       ['Marketing Analytics', 'Consumer Behavior', 'Brand Strategy'],
       ['Leadership Styles', 'Organizational Culture', 'Change Management'],
       ['Financial Markets', 'Investment Strategies', 'Risk Management'],
-      
-      // Art & Design
       ['Color Theory', 'Typography', 'Visual Composition'],
       ['Design Thinking', 'User Experience', 'Interface Design'],
-      
-      // Science
       ['Quantum Physics', 'String Theory', 'Cosmology'],
       ['Molecular Biology', 'Genetics', 'CRISPR Technology'],
       ['Climate Change', 'Sustainable Energy', 'Conservation'],
-      
-      // Humanities
       ['Existentialism', 'Postmodernism', 'Critical Theory'],
       ['World Mythology', 'Archetypal Symbols', 'Comparative Religion'],
       ['Globalization', 'Cultural Identity', 'Diaspora Studies']
@@ -302,12 +234,12 @@ export default function SyllabusInput() {
   return (
     <>
       <Nav />
-      <div className={`min-h-screen bg-gradient-to-br from-${themeColor}-50 via-purple-50 to-pink-50 flex flex-col items-center justify-center p-6 pt-20`}>
+      <div className={`min-h-screen bg-gradient-to-br ${themeColors[theme].bg} flex flex-col items-center justify-center p-6 pt-20`}>
         <motion.h1
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6, ease: 'easeOut' }}
-          className={`text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r ${themeColors[themeColor].primary} mb-2 text-center`}
+          className={`text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r ${themeColors[theme].gradient} mb-2 text-center`}
         >
           Craft Your Creative Syllabus
         </motion.h1>
@@ -316,17 +248,17 @@ export default function SyllabusInput() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
-          className="text-lg text-gray-700 mb-8 text-center max-w-xl"
+          className={`text-lg ${themeColors[theme].text} mb-8 text-center max-w-xl`}
         >
           <p>Transform your course into an engaging learning journey with a personalized syllabus.</p>
           <div className="flex items-center justify-center mt-2 space-x-2">
-            <span className="flex items-center text-sm px-2 py-1 rounded-full bg-gray-100">
+            <span className="flex items-center text-sm px-2 py-1 rounded-full bg-white">
               <BookOpen size={14} className="mr-1" /> Personalized
             </span>
-            <span className="flex items-center text-sm px-2 py-1 rounded-full bg-gray-100">
+            <span className="flex items-center text-sm px-2 py-1 rounded-full bg-white">
               <Calendar size={14} className="mr-1" /> 4-Week Plan
             </span>
-            <span className="flex items-center text-sm px-2 py-1 rounded-full bg-gray-100">
+            <span className="flex items-center text-sm px-2 py-1 rounded-full bg-white">
               <Globe size={14} className="mr-1" /> Curated Resources
             </span>
           </div>
@@ -347,7 +279,7 @@ export default function SyllabusInput() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate('/course-input')}
-              className={`bg-gradient-to-r ${themeColors[themeColor].button} text-white font-bold py-3 px-6 rounded-lg transition-all duration-300`}
+              className={`bg-gradient-to-r ${themeColors[theme].gradient} ${themeColors[theme].hover} text-white font-bold py-3 px-6 rounded-lg transition-all duration-300`}
             >
               Go to Course Input
             </motion.button>
@@ -357,7 +289,7 @@ export default function SyllabusInput() {
         {!error && (
           <div className="w-full max-w-lg">
             <motion.div 
-              className="bg-white rounded-2xl shadow-xl p-8 mb-6"
+              className="bg-white/10 backdrop-blur-md rounded-2xl shadow-xl p-8 mb-6 border"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, ease: 'easeOut' }}
@@ -366,7 +298,7 @@ export default function SyllabusInput() {
                 <div className="mb-6">
                   <label
                     htmlFor="course-select"
-                    className="block text-gray-800 text-sm font-semibold mb-2 flex items-center"
+                    className={`block text-sm font-semibold mb-2 flex items-center ${themeColors[theme].text}`}
                   >
                     <BookOpen size={16} className="mr-2" /> Select Course
                   </label>
@@ -374,7 +306,7 @@ export default function SyllabusInput() {
                     id="course-select"
                     value={selectedCourse}
                     onChange={(e) => setSelectedCourse(e.target.value)}
-                    className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-800 text-white"
                     variants={inputVariants}
                     whileFocus="focus"
                     initial="blur"
@@ -390,7 +322,7 @@ export default function SyllabusInput() {
 
                 <div className="mb-6">
                   <div className="flex justify-between items-center mb-2">
-                    <label className="block text-gray-800 text-sm font-semibold flex items-center">
+                    <label className={`block text-sm font-semibold flex items-center ${themeColors[theme].text}`}>
                       <Book size={16} className="mr-2" /> Key Topics
                     </label>
                     <motion.button
@@ -398,7 +330,7 @@ export default function SyllabusInput() {
                       onClick={generateRandomTopics}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="text-xs px-2 py-1 rounded bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all"
+                      className={`text-xs px-2 py-1 rounded bg-gradient-to-r ${themeColors[theme].gradient} ${themeColors[theme].hover} text-white transition-all`}
                     >
                       Inspire Me
                     </motion.button>
@@ -417,7 +349,7 @@ export default function SyllabusInput() {
                         value={topic}
                         onChange={(e) => handleTopicChange(index, e.target.value)}
                         placeholder={`Topic ${index + 1} (e.g., ${['Quantum Computing', 'Design Thinking', 'Renaissance Art'][index]})`}
-                        className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-800 text-white"
                         variants={inputVariants}
                         whileFocus="focus"
                         initial="blur"
@@ -430,7 +362,7 @@ export default function SyllabusInput() {
                   <div>
                     <label
                       htmlFor="learning-style"
-                      className="block text-gray-800 text-sm font-semibold mb-2"
+                      className={`block text-sm font-semibold mb-2 ${themeColors[theme].text}`}
                     >
                       Learning Style
                     </label>
@@ -438,7 +370,7 @@ export default function SyllabusInput() {
                       id="learning-style"
                       value={learningStyle}
                       onChange={(e) => setLearningStyle(e.target.value)}
-                      className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-800 text-white"
                       variants={inputVariants}
                       whileFocus="focus"
                       initial="blur"
@@ -453,7 +385,7 @@ export default function SyllabusInput() {
                   <div>
                     <label
                       htmlFor="difficulty"
-                      className="block text-gray-800 text-sm font-semibold mb-2"
+                      className={`block text-sm font-semibold mb-2 ${themeColors[theme].text}`}
                     >
                       Difficulty Level
                     </label>
@@ -461,7 +393,7 @@ export default function SyllabusInput() {
                       id="difficulty"
                       value={difficulty}
                       onChange={(e) => setDifficulty(e.target.value)}
-                      className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400"
+                      className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-800 text-white"
                       variants={inputVariants}
                       whileFocus="focus"
                       initial="blur"
@@ -481,7 +413,7 @@ export default function SyllabusInput() {
                   className={`w-full py-3 rounded-lg font-bold text-white transition-all duration-300 ${
                     loading
                       ? 'bg-gray-400 cursor-not-allowed'
-                      : `bg-gradient-to-r ${themeColors[themeColor].button}`
+                      : `bg-gradient-to-r ${themeColors[theme].gradient} ${themeColors[theme].hover}`
                   }`}
                 >
                   {loading ? (
@@ -509,20 +441,20 @@ export default function SyllabusInput() {
             transition={{ delay: 0.3, duration: 0.5 }}
           >
             <div className="flex justify-between items-center mb-4">
-              <h2 className={`text-2xl font-bold ${themeColors[themeColor].accent}`}>Your Creative Syllabus</h2>
+              <h2 className={`text-2xl font-bold ${themeColors[theme].text}`}>Your Creative Syllabus</h2>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handleDownloadPDF}
-                className="flex items-center text-sm px-3 py-2 rounded-lg bg-gray-100 hover:bg-gray-200 transition-all"
+                className={`flex items-center text-sm px-3 py-2 rounded-lg bg-gradient-to-r ${themeColors[theme].gradient} ${themeColors[theme].hover} text-white transition-all`}
               >
                 <Download size={16} className="mr-1" /> Export PDF
               </motion.button>
             </div>
             
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div className="bg-white/10 backdrop-blur-md rounded-lg shadow-lg overflow-hidden border">
               {selectedCourse && (
-                <div className={`p-4 bg-gradient-to-r ${themeColors[themeColor].primary} text-white`}>
+                <div className={`p-4 bg-gradient-to-r ${themeColors[theme].gradient} text-white`}>
                   <h2 className="text-lg font-semibold">
                     {courses.find(c => c.courseCode === selectedCourse)?.courseName} ({selectedCourse})
                   </h2>
@@ -547,7 +479,7 @@ export default function SyllabusInput() {
                       initial="hidden"
                       animate="visible"
                       transition={{ delay: index * 0.1 }}
-                      className={`mb-4 p-4 rounded-lg border ${themeColors[themeColor].border} overflow-hidden`}
+                      className={`mb-4 p-4 rounded-lg border ${themeColors[theme].border} overflow-hidden`}
                     >
                       <div 
                         className="cursor-pointer"
@@ -555,21 +487,21 @@ export default function SyllabusInput() {
                       >
                         <div className="flex justify-between items-center">
                           <div className="flex items-start">
-                            <div className={`h-8 w-8 rounded-full flex items-center justify-center ${themeColors[themeColor].secondary} mr-3`}>
+                            <div className={`h-8 w-8 rounded-full flex items-center justify-center bg-gradient-to-r ${themeColors[theme].gradient} mr-3 text-white`}>
                               {entry.week}
                             </div>
                             <div>
-                              <h3 className={`text-lg font-semibold ${themeColors[themeColor].accent}`}>
+                              <h3 className={`text-lg font-semibold ${themeColors[theme].text}`}>
                                 {entry.title || `Week ${entry.week}: ${entry.topic}`}
                               </h3>
-                              <p className="text-gray-600 text-sm">{entry.topic}</p>
+                              <p className={`text-sm ${themeColors[theme].text}`}>{entry.topic}</p>
                             </div>
                           </div>
                           <motion.div
                             animate={{ rotate: expandedWeek === entry.week ? 180 : 0 }}
                             transition={{ duration: 0.3 }}
                           >
-                            <ChevronDown size={20} className="text-gray-500" />
+                            <ChevronDown size={20} className="text-gray-300" />
                           </motion.div>
                         </div>
                       </div>
@@ -585,13 +517,13 @@ export default function SyllabusInput() {
                           >
                             <div className="border-t pt-4 mt-2">
                               <div className="mb-3">
-                                <h4 className="text-sm font-semibold text-gray-700 mb-1">Readings & Resources</h4>
-                                <p className="text-gray-600 text-sm">{entry.readings}</p>
+                                <h4 className={`text-sm font-semibold mb-1 ${themeColors[theme].text}`}>Readings & Resources</h4>
+                                <p className={`text-sm ${themeColors[theme].text}`}>{entry.readings}</p>
                               </div>
                               
                               {entry.links && entry.links.length > 0 && (
                                 <div className="mb-3">
-                                  <h4 className="text-sm font-semibold text-gray-700 mb-1">Online Resources</h4>
+                                  <h4 className={`text-sm font-semibold mb-1 ${themeColors[theme].text}`}>Online Resources</h4>
                                   <ul className="space-y-1">
                                     {entry.links.map((link, linkIndex) => (
                                       <motion.li 
@@ -603,12 +535,12 @@ export default function SyllabusInput() {
                                         whileHover="hover"
                                         className="flex items-center text-sm"
                                       >
-                                        <Globe size={14} className={`mr-2 ${themeColors[themeColor].link}`} />
+                                        <Globe size={14} className={`mr-2 ${themeColors[theme].text}`} />
                                         <a
                                           href={link}
                                           target="_blank"
                                           rel="noopener noreferrer"
-                                          className={`${themeColors[themeColor].link} hover:underline`}
+                                          className={`${themeColors[theme].text} hover:underline`}
                                         >
                                           {link.length > 60 ? link.substring(0, 60) + '...' : link}
                                         </a>
@@ -620,17 +552,17 @@ export default function SyllabusInput() {
                               
                               {entry.challenge && (
                                 <div className="mb-3">
-                                  <h4 className="text-sm font-semibold text-gray-700 mb-1 flex items-center">
+                                  <h4 className={`text-sm font-semibold mb-1 flex items-center ${themeColors[theme].text}`}>
                                     <Award size={14} className="mr-1" /> Weekly Challenge
                                   </h4>
-                                  <p className="text-gray-600 text-sm">{entry.challenge}</p>
+                                  <p className={`text-sm ${themeColors[theme].text}`}>{entry.challenge}</p>
                                 </div>
                               )}
                               
                               {entry.quote && (
-                                <div className={`mt-4 p-3 rounded-lg ${themeColors[themeColor].secondary} italic`}>
-                                  <p className="text-sm">"{entry.quote}"</p>
-                                  {entry.author && <p className="text-right text-xs mt-1">— {entry.author}</p>}
+                                <div className={`mt-4 p-3 rounded-lg bg-white/10 backdrop-blur-md italic`}>
+                                  <p className={`text-sm ${themeColors[theme].text}`}>"{entry.quote}"</p>
+                                  {entry.author && <p className={`text-right text-xs mt-1 ${themeColors[theme].text}`}>— {entry.author}</p>}
                                 </div>
                               )}
                             </div>
@@ -646,7 +578,7 @@ export default function SyllabusInput() {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => navigate('/timetable', { state: { courses } })}
-                    className={`flex-1 bg-gradient-to-r ${themeColors[themeColor].button} text-white font-bold py-3 rounded-lg transition-all duration-300 flex items-center justify-center`}
+                    className={`flex-1 bg-gradient-to-r ${themeColors[theme].gradient} ${themeColors[theme].hover} text-white font-bold py-3 rounded-lg transition-all duration-300 flex items-center justify-center`}
                   >
                     <Calendar size={18} className="mr-2" /> View Timetable
                   </motion.button>
@@ -658,7 +590,7 @@ export default function SyllabusInput() {
                       setSyllabus([]);
                       setGenerationComplete(false);
                     }}
-                    className="px-4 py-3 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 transition-all duration-300"
+                    className={`px-4 py-3 rounded-lg border ${themeColors[theme].border} text-gray-300 hover:bg-gray-800/20 transition-all duration-300`}
                   >
                     Start Over
                   </motion.button>

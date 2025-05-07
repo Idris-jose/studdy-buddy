@@ -15,6 +15,7 @@ import Syllabus from './syllabus.jsx';
 import TqSolver from './tqsolver.jsx'; 
 import ErrorBoundary from './Errorboundary.jsx';
 import NoteGenerator from './NoteGenerator.jsx';
+import { ThemeProvider } from './themecontext.jsx';
 // Load the PDF worker configuration early in the application lifecycle
 import './pdfWorker.js';
 
@@ -41,6 +42,7 @@ const NotFound = () => (
 function App() {
   return (
     <BrowserRouter>
+      <ThemeProvider>
       <ErrorBoundary>
       <div className="flex flex-col min-h-screen">
         <main className="flex-1">
@@ -72,6 +74,7 @@ function App() {
         <Footer />
       </div>
       </ErrorBoundary>
+      </ThemeProvider>
     </BrowserRouter>
   );
 }

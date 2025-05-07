@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Nav from './navbar.jsx';
+import { useTheme } from './themecontext.jsx';
 
 export default function CourseInput() {
   const [courseName, setCourseName] = useState('');
@@ -10,42 +11,15 @@ export default function CourseInput() {
   const [courses, setCourses] = useState([]);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [theme, setTheme] = useState('blue');
+  
   const [showConfetti, setShowConfetti] = useState(false);
   const navigate = useNavigate();
 
   // Course themes with colors
-  const themeColors = {
-    blue: {
-      gradient: 'from-blue-500 to-purple-500',
-      hover: 'hover:from-blue-600 hover:to-purple-600',
-      border: 'border-blue-500',
-      text: 'text-blue-600',
-      bg: 'from-blue-50 via-purple-50 to-pink-50'
-    },
-    green: {
-      gradient: 'from-green-500 to-teal-500',
-      hover: 'hover:from-green-600 hover:to-teal-600',
-      border: 'border-green-500',
-      text: 'text-green-600',
-      bg: 'from-green-50 via-teal-50 to-blue-50'
-    },
-    amber: {
-      gradient: 'from-amber-500 to-orange-500',
-      hover: 'hover:from-amber-600 hover:to-orange-600',
-      border: 'border-amber-500',
-      text: 'text-amber-600',
-      bg: 'from-amber-50 via-orange-50 to-yellow-50'
-    },
-    purple: {
-      gradient: 'from-purple-500 to-pink-500',
-      hover: 'hover:from-purple-600 hover:to-pink-600',
-      border: 'border-purple-500',
-      text: 'text-purple-600',
-      bg: 'from-purple-50 via-pink-50 to-indigo-50'
-    }
-  };
-
+  
+const {changeTheme} = useTheme()
+const {theme} = useTheme()
+const {themeColors} = useTheme()
   // Fun emoji mappings for different types of courses
   const courseEmojis = {
     'cs': '💻',
@@ -174,21 +148,8 @@ export default function CourseInput() {
     setCourses(courses.filter((_, i) => i !== index));
   };
 
-  const handleDone = () => {
-    if (courses.length < 3) {
-      setError('Add at least 3 courses to proceed');
-      return;
-    }
-    navigate('/timetable', { state: { courses } });
-  };
 
-  const changeTheme = () => {
-    const themes = Object.keys(themeColors);
-    const currentIndex = themes.indexOf(theme);
-    const nextIndex = (currentIndex + 1) % themes.length;
-    setTheme(themes[nextIndex]);
-  };
-
+ 
   const totalUnits = courses.reduce((sum, course) => sum + course.unit, 0);
   const unitPercent = Math.min(totalUnits / 18 * 100, 100); // Assuming 18 is max units
 
@@ -254,11 +215,11 @@ export default function CourseInput() {
           
           <motion.button
             onClick={changeTheme}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className={`bg-gradient-to-r ${themeColors[theme].gradient} text-white text-xs px-3 py-1 rounded-full ${themeColors[theme].hover} transition-all duration-300`}
+            whileHover={{ scale: 1.2 }}
+            whileTap={{ scale: 0.9 }}
+            className={`w-10 h-10 rounded-full flex items-center justify-center text-xl bg-gradient-to-r ${themeColors[theme].gradient} text-white ${themeColors[theme].hover}`}
           >
-            Change Theme
+            🎨
           </motion.button>
         </motion.div>
 

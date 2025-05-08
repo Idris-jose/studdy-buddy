@@ -342,7 +342,7 @@ const {themeColors} = useTheme()
               transition={{ duration: 0.5, delay: 0.3 }}
             >
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-800">Your Courses ({courses.length}/6)</h2>
+                <h2 className="text-2xl font-bold text-gray-800">Your Courses ({courses.length})</h2>
                 <span className={`text-sm ${courses.length < 3 ? 'text-amber-600' : 'text-green-600'}`}>
                   {courses.length < 3 ? `Add ${3 - courses.length} more to proceed` : 'Ready to go!'}
                 </span>

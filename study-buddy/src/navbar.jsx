@@ -43,7 +43,7 @@ export default function Nav() {
   // Dropdown menu items
   const dropdownItems = [
     { path: "/about", label: "About Us" },
-    { path: "/contact", label: "Contact" },
+    { path: "/bugbox", label: "bug box" },
     
   ];
 

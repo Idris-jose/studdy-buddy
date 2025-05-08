@@ -124,7 +124,7 @@ def generate_notes():
         return error_response
 
     # Prepare prompt for generating notes
-    prompt = f"""
+    prompt = f""".
         You are an expert educator skilled in creating comprehensive study materials. The following text is extracted from a PDF document. Analyze the text and generate extensive, well-structured notes that summarize and explain the key concepts, ideas, and details in the document.if the text include questions pick the topics from the questions and generate a note with it instaed of answering the question.  The notes should be clear, concise, and suitable for university-level study, organized with headings, bullet points, or numbered lists as appropriate. Focus on clarity, educational value, and retaining all critical information. If the text is unclear or ambiguous, make reasonable interpretations and note any assumptions made.
 
         Text from file:

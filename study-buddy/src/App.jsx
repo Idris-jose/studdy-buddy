@@ -15,6 +15,8 @@ import Syllabus from './syllabus.jsx';
 import TqSolver from './tqsolver.jsx'; 
 import ErrorBoundary from './Errorboundary.jsx';
 import NoteGenerator from './NoteGenerator.jsx';
+import About from './about.jsx';
+import BugBox from './bugbox.jsx';
 import { ThemeProvider } from './themecontext.jsx';
 // Load the PDF worker configuration early in the application lifecycle
 import './pdfWorker.js';
@@ -75,6 +77,8 @@ function App() {
             <Route path="*" element={<NotFound />} />
             {/* Note Generator route */}
             <Route path="/notegenerator" element={<NoteGenerator />} />
+            <Route path='/about' element={<About/>} />
+            <Route path='/bugbox' element={<BugBox/>} />
           </Routes>
         </main>
         {/* Footer is always present */}

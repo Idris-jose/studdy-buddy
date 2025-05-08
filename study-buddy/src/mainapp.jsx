@@ -104,7 +104,8 @@ export default function MainApp() {
     "Start by adding your courses to create a foundation",
     "Generate a timetable to organize your study sessions",
     "Build syllabi for a clear roadmap of each course",
-    "Use TQ Solver to master challenging concepts"
+    "Use TQ Solver to master challenging concepts",
+    "create comprehensive notes to aid in reading"
   ];
 
   return (

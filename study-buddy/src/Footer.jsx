@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Twitter, Facebook, Instagram, Youtube, ChevronDown } from 'lucide-react';
+import { Twitter, Facebook, Instagram, Youtube, ChevronDown,BookOpen } from 'lucide-react';
 
 const Footer = () => {
   const [email, setEmail] = useState('');
@@ -75,7 +75,7 @@ const Footer = () => {
           {/* Logo & Tagline */}
           <div className="flex flex-col space-y-4">
             <div className="flex items-center">
-              <span className="text-2xl font-bold text-gray-900">📊 Study Timetable</span>
+              <span className="text-2xl flex items-center justify-center gap-1.5 font-bold text-gray-900"><BookOpen className='bg-blue-600 w-10 h-10 p-1  rounded text-white' /> Study Timetable</span>
             </div>
             <p className="text-gray-600 max-w-sm">
               Organize your study schedule efficiently and achieve your academic goals.
@@ -150,7 +150,7 @@ const Footer = () => {
 
           {/* Copyright */}
           <div className="text-gray-500 text-sm">
-            © {new Date().getFullYear()} Study Timetable • 
+            © {new Date().getFullYear()} Study Buddy• 
             <a href="/privacy" className="hover:text-blue-600 ml-1 mr-1">Privacy</a> • 
             <a href="/terms" className="hover:text-blue-600 mr-1">Terms</a> • 
             <a href="/sitemap" className="hover:text-blue-600">Sitemap</a>

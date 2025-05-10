@@ -27,15 +27,33 @@ const Login = () => {
     if (successMsg) {
       setSuccess(decodeURIComponent(successMsg));
     }
-    
-    // Check for saved email in localStorage
+  
+    // Parse access token from hash (e.g., after signup or OAuth)
+    const hashParams = new URLSearchParams(window.location.hash.substring(1)); // remove the `#`
+    const access_token = hashParams.get('access_token');
+    const refresh_token = hashParams.get('refresh_token');
+  
+    if (access_token && refresh_token) {
+      supabase.auth.setSession({
+        access_token,
+        refresh_token,
+      }).then(({ error }) => {
+        if (error) {
+          setError('Session restoration failed.');
+        } else {
+          navigate('/mainapp');
+        }
+      });
+    }
+  
+    // Restore remembered email
     const savedEmail = localStorage.getItem('rememberedEmail');
     if (savedEmail) {
       setFormData(prev => ({ ...prev, email: savedEmail }));
       setRememberMe(true);
     }
   }, [location]);
-
+  
   const validateField = (name, value) => {
     switch (name) {
       case 'email':

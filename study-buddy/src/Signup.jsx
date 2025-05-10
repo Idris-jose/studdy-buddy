@@ -121,7 +121,7 @@ const SignUp = () => {
         password,
         options: {
           data: { username },
-          emailRedirectTo: 'http://localhost:5174/login?success=Account%20created!%20Please%20check%20your%20email%20for%20verification.',
+          emailRedirectTo: 'https://studdy-buddy-wheat.vercel.app/login?success=Account%20created!%20Please%20check%20your%20email%20for%20verification.',
         },
       });
 

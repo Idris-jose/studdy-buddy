@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from './client.js';
+import { Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -8,33 +9,85 @@ const Login = () => {
     password: '',
   });
   const [error, setError] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({
+    email: null,
+    password: null,
+  });
   const [success, setSuccess] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Check for redirected success message
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const successMsg = params.get('success');
+    if (successMsg) {
+      setSuccess(decodeURIComponent(successMsg));
+    }
+    
+    // Check for saved email in localStorage
+    const savedEmail = localStorage.getItem('rememberedEmail');
+    if (savedEmail) {
+      setFormData(prev => ({ ...prev, email: savedEmail }));
+      setRememberMe(true);
+    }
+  }, [location]);
+
+  const validateField = (name, value) => {
+    switch (name) {
+      case 'email':
+        if (!value) return 'Email is required';
+        if (!/\S+@\S+\.\S+/.test(value)) return 'Please enter a valid email address';
+        return null;
+      case 'password':
+        if (!value) return 'Password is required';
+        if (value.length < 6) return 'Password must be at least 6 characters';
+        return null;
+      default:
+        return null;
+    }
+  };
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    
+    // Validate field on change
+    const error = validateField(name, value);
+    setFieldErrors(prev => ({ ...prev, [name]: error }));
+  };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleRememberMe = () => {
+    setRememberMe(!rememberMe);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
     setSuccess(null);
+    
+    // Validate all fields before submission
+    const newFieldErrors = {
+      email: validateField('email', formData.email),
+      password: validateField('password', formData.password),
+    };
+    
+    setFieldErrors(newFieldErrors);
+    
+    // Check if there are any errors
+    if (Object.values(newFieldErrors).some(error => error !== null)) {
+      return; // Stop submission if there are errors
+    }
+    
     setLoading(true);
-
     const { email, password } = formData;
-
-    // Client-side validation
-    if (!email || !/\S+@\S+\.\S+/.test(email)) {
-      setError('Please enter a valid email address.');
-      setLoading(false);
-      return;
-    }
-    if (!password || password.length < 6) {
-      setError('Password must be at least 6 characters long.');
-      setLoading(false);
-      return;
-    }
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -45,13 +98,27 @@ const Login = () => {
       if (error) throw error;
 
       if (data.user) {
+        // Handle "remember me" functionality
+        if (rememberMe) {
+          localStorage.setItem('rememberedEmail', email);
+        } else {
+          localStorage.removeItem('rememberedEmail');
+        }
+        
         setSuccess('Login successful! Redirecting...');
         setTimeout(() => {
           navigate('/mainapp');
-        }, 2000);
+        }, 1500);
       }
     } catch (err) {
-      setError(err.message || 'An error occurred during login.');
+      // Handle specific error cases
+      if (err.message.includes('Invalid login credentials')) {
+        setError('Invalid email or password. Please try again.');
+      } else if (err.message.includes('Email not confirmed')) {
+        setError('Please verify your email address before logging in.');
+      } else {
+        setError(err.message || 'An error occurred during login.');
+      }
     } finally {
       setLoading(false);
     }
@@ -63,7 +130,12 @@ const Login = () => {
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
-        options: { redirectTo: window.location.origin + '/mainapp' },
+        options: { 
+          redirectTo: window.location.origin + '/mainapp',
+          queryParams: {
+            prompt: 'select_account', // Always show Google account selector
+          }
+        },
       });
       if (error) throw error;
     } catch (err) {
@@ -101,25 +173,28 @@ const Login = () => {
         <h1 className="text-3xl md:text-4xl font-bold text-indigo-600 mb-2">
           Welcome Back to School Buddy!
         </h1>
-        <p className="text-gray-700 mb-8 max-w-md">
+        <p className="text-gray-700 mb-6 max-w-md">
           Log in to manage your school schedules, track assignments, and boost your grades.
         </p>
 
         {error && (
-          <div className="mb-6 p-3 bg-red-100 text-red-700 rounded-md w-full max-w-md">
-            {error}
+          <div className="mb-6 p-3 bg-red-100 text-red-700 rounded-md w-full max-w-md flex items-center">
+            <AlertCircle className="h-5 w-5 mr-2 flex-shrink-0" />
+            <span>{error}</span>
           </div>
         )}
+        
         {success && (
-          <div className="mb-6 p-3 bg-green-100 text-green-700 rounded-md w-full max-w-md">
-            {success}
+          <div className="mb-6 p-3 bg-green-100 text-green-700 rounded-md w-full max-w-md flex items-center">
+            <CheckCircle className="h-5 w-5 mr-2 flex-shrink-0" />
+            <span>{success}</span>
           </div>
         )}
 
         <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
           <form onSubmit={handleSubmit} aria-label="Login form">
             <div className="mb-4">
-              <label htmlFor="email" className="sr-only">
+              <label htmlFor="email" className="block text-left text-sm font-medium text-gray-700 mb-1">
                 Email
               </label>
               <input
@@ -129,34 +204,79 @@ const Login = () => {
                 placeholder="Enter your school email"
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className={`w-full p-3 border ${
+                  fieldErrors.email ? 'border-red-500' : 'border-gray-300'
+                } rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500`}
                 required
                 disabled={loading}
                 aria-required="true"
+                aria-invalid={!!fieldErrors.email}
+                aria-describedby={fieldErrors.email ? "email-error" : undefined}
               />
+              {fieldErrors.email && (
+                <p id="email-error" className="mt-1 text-sm text-red-600 text-left">
+                  {fieldErrors.email}
+                </p>
+              )}
             </div>
+            
             <div className="mb-4">
-              <label htmlFor="password" className="sr-only">
+              <label htmlFor="password" className="block text-left text-sm font-medium text-gray-700 mb-1">
                 Password
               </label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="Enter your password"
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                required
-                disabled={loading}
-                aria-required="true"
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  name="password"
+                  placeholder="Enter your password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className={`w-full p-3 border ${
+                    fieldErrors.password ? 'border-red-500' : 'border-gray-300'
+                  } rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 pr-10`}
+                  required
+                  disabled={loading}
+                  aria-required="true"
+                  aria-invalid={!!fieldErrors.password}
+                  aria-describedby={fieldErrors.password ? "password-error" : undefined}
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 hover:text-gray-700"
+                  onClick={togglePasswordVisibility}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
+              {fieldErrors.password && (
+                <p id="password-error" className="mt-1 text-sm text-red-600 text-left">
+                  {fieldErrors.password}
+                </p>
+              )}
             </div>
-            <div className="mb-6 text-sm text-left">
-              <Link to="/forgot-password" className="text-indigo-600 hover:underline">
+            
+            <div className="flex items-center justify-between mb-6">
+              <label className="flex items-center text-sm" htmlFor="remember-me">
+                <input
+                  type="checkbox"
+                  id="remember-me"
+                  checked={rememberMe}
+                  onChange={toggleRememberMe}
+                  className="mr-2 h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                />
+                Remember me
+              </label>
+              <Link to="/forgot-password" className="text-sm text-indigo-600 hover:underline">
                 Forgot your password?
               </Link>
             </div>
+            
             <button
               type="submit"
               className="w-full bg-indigo-600 text-white font-bold py-3 rounded-md hover:bg-indigo-700 transition disabled:opacity-50 flex items-center justify-center"
@@ -261,6 +381,10 @@ const Login = () => {
                 </button>
               </Link>
             </div>
+          </div>
+          
+          <div className="mt-6 text-sm text-gray-600">
+            <p>Need help? <a href="#" className="text-indigo-600 hover:underline">Contact support</a></p>
           </div>
         </div>
       </main>

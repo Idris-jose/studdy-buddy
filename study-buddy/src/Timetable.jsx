@@ -8,7 +8,14 @@ const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 export default function Timetable() {
     const location = useLocation();
     const { courses = [] } = location.state || {};
-    const [timetable, setTimetable] = useState([]);
+    const [timetable, setTimetable] = useState(() => {
+        const savedTimetable = localStorage.getItem('timetable');
+        return savedTimetable ? JSON.parse(savedTimetable) : [];
+    });
+
+    useEffect(() => {
+        localStorage.setItem('timetable', JSON.stringify(timetable));
+    }, [timetable]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [rawResponse, setRawResponse] = useState(null);

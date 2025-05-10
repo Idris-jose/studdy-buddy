@@ -1,11 +1,33 @@
-import { NavLink } from "react-router-dom";
+import {  NavLink,useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import { Menu, X, BookOpen, ChevronDown } from 'lucide-react';
+import { Menu, X, BookOpen } from 'lucide-react';
+import { supabase } from './client.js';
+
 export default function Nav() {
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const dropdownRef = useRef(null);
+
+  // Check authentication status
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsLoggedIn(!!session);
+    };
+
+    checkUser();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsLoggedIn(!!session);
+    });
+
+    return () => {
+      authListener.subscription?.unsubscribe();
+    };
+  }, []);
 
   // Handle scroll effect for navbar
   useEffect(() => {
@@ -30,7 +52,7 @@ export default function Nav() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Array of navigation items for DRY code
+  // Array of navigation items
   const navItems = [
     { path: "/mainapp", label: "Home" },
     { path: "/course-input", label: "Course Input" },
@@ -43,9 +65,15 @@ export default function Nav() {
   // Dropdown menu items
   const dropdownItems = [
     { path: "/about", label: "About Us" },
-    { path: "/bugbox", label: "bug box" },
-    
+    { path: "/bugbox", label: "Bug Box" },
   ];
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setIsLoggedIn(false);
+    setIsMenuOpen(false);
+    navigate("/login");
+  };
 
   return (
     <nav
@@ -118,7 +146,6 @@ export default function Nav() {
                 </svg>
               </button>
               
-              {/* Dropdown menu */}
               {isDropdownOpen && (
                 <div
                   className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 py-1"
@@ -145,28 +172,44 @@ export default function Nav() {
             </div>
           </div>
 
-          {/* Sign In / Sign Up Buttons */}
+          {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center space-x-3">
-            <NavLink
-              to="/login"
-              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                isScrolled
-                  ? "text-blue-600 hover:bg-blue-50"
-                  : "text-white hover:bg-white/10"
-              }`}
-            >
-              Log In
-            </NavLink>
-            <NavLink
-              to="/signup"
-              className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                isScrolled
-                  ? "bg-blue-600 text-white hover:bg-blue-700"
-                  : "bg-white text-blue-600 hover:bg-blue-50"
-              }`}
-            >
-              Sign Up
-            </NavLink>
+            {isLoggedIn ? (
+              <button
+                onClick={handleLogout}
+                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                  isScrolled
+                    ? "text-blue-600 hover:bg-blue-50"
+                    : "text-white hover:bg-white/10"
+                }`}
+                aria-label="Log out of Study Buddy"
+              >
+                Log Out
+              </button>
+            ) : (
+              <>
+                <NavLink
+                  to="/login"
+                  className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                    isScrolled
+                      ? "text-blue-600 hover:bg-blue-50"
+                      : "text-white hover:bg-white/10"
+                  }`}
+                >
+                  Log In
+                </NavLink>
+                <NavLink
+                  to="/signup"
+                  className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                    isScrolled
+                      ? "bg-blue-600 text-white hover:bg-blue-700"
+                      : "bg-white text-blue-600 hover:bg-blue-50"
+                  }`}
+                >
+                  Sign Up
+                </NavLink>
+              </>
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -182,37 +225,9 @@ export default function Nav() {
             >
               <span className="sr-only">{isMenuOpen ? "Close menu" : "Open menu"}</span>
               {isMenuOpen ? (
-                <svg
-                  className="h-6 w-6"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
+                <X className="h-6 w-6" />
               ) : (
-                <svg
-                  className="h-6 w-6"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M4 6h16M4 12h16M4 18h16"
-                  />
-                </svg>
+                <Menu className="h-6 w-6" />
               )}
             </button>
           </div>
@@ -240,7 +255,6 @@ export default function Nav() {
               </NavLink>
             ))}
             
-            {/* Dropdown items directly in mobile menu */}
             {dropdownItems.map((item) => (
               <NavLink
                 key={item.path}
@@ -259,7 +273,7 @@ export default function Nav() {
             ))}
           </div>
           
-          {/* Mobile sign in/up buttons */}
+          {/* Mobile auth buttons */}
           <div className="pt-4 pb-3 border-t border-gray-200">
             <div className="flex items-center px-5">
               <div className="flex-shrink-0">
@@ -275,20 +289,32 @@ export default function Nav() {
               </div>
             </div>
             <div className="mt-3 px-2 space-y-1">
-              <NavLink
-                to="/login"
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Log In
-              </NavLink>
-              <NavLink
-                to="/signup"
-                className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Sign Up
-              </NavLink>
+              {isLoggedIn ? (
+                <button
+                  onClick={handleLogout}
+                  className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600"
+                  aria-label="Log out of Study Buddy"
+                >
+                  Log Out
+                </button>
+              ) : (
+                <>
+                  <NavLink
+                    to="/login"
+                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Log In
+                  </NavLink>
+                  <NavLink
+                    to="/signup"
+                    className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-blue-600"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    Sign Up
+                  </NavLink>
+                </>
+              )}
             </div>
           </div>
         </div>

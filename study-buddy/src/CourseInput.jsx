@@ -5,16 +5,38 @@ import Nav from './navbar.jsx';
 import { useTheme } from './themecontext.jsx';
 
 export default function CourseInput() {
-  const [courseName, setCourseName] = useState('');
+  const [courseName, setCourseName] = useState(() => {
+    const savedCourseName = localStorage.getItem('courseName');
+    return savedCourseName ? JSON.parse(savedCourseName) : '';
+  });
   const [courseCode, setCourseCode] = useState('');
   const [unit, setUnit] = useState('');
-  const [courses, setCourses] = useState([]);
+  const [courses, setCourses] = useState(() => {
+    const savedCourses = localStorage.getItem('courses');
+    return savedCourses ? JSON.parse(savedCourses) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('courseName', JSON.stringify(courseName));
+  }, [courseName]);
+
+  useEffect(() => {
+    localStorage.setItem('courses', JSON.stringify(courses));
+  }, [courses]);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   
   const [showConfetti, setShowConfetti] = useState(false);
   const navigate = useNavigate();
 
+   useEffect(() => {
+      localStorage.setItem('courseName', JSON.stringify(courseName));
+    }, [courseName]);
+
+    useEffect(() => {
+      localStorage.setItem('courses', JSON.stringify(courses));
+    }, [courses]);
+  
   // Course themes with colors
   
 const {changeTheme} = useTheme()

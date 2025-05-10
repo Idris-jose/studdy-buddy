@@ -121,7 +121,7 @@ const SignUp = () => {
         password,
         options: {
           data: { username },
-          emailRedirectTo: `${window.location.origin}/login?success=${encodeURIComponent('Account created! Please check your email for verification.')}`,
+          emailRedirectTo: 'https://studdy-buddy-wheat.vercel.app/login?success=Account%20created!%20Please%20check%20your%20email%20for%20verification.',
         },
       });
 

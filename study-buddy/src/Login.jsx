@@ -219,7 +219,7 @@ const Login = () => {
                 type="email"
                 id="email"
                 name="email"
-                placeholder="Enter your school email"
+                placeholder="Enter your email"
                 value={formData.email}
                 onChange={handleChange}
                 className={`w-full p-3 border ${

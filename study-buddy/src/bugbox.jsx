@@ -1,17 +1,33 @@
+// Simple solution with direct mailto link (no backend required)
 import Navbar from './navbar.jsx';
-
 import { useState } from 'react';
-export default function BugBox(){
 
+export default function BugBox(){
     const [description, setDescription] = useState(''); 
     const [title, setTitle] = useState('');
+    const [email, setEmail] = useState('');
       
     const handleSubmit = (event) => {
         event.preventDefault();
-        // Handle form submission logic here
-        console.log("Bug reported!");
-        setDescription(''); // Clear the description field
-        setTitle(''); // Clear the title field
+        
+        // Create the email body
+        const emailBody = `Bug Title: ${title}
+        
+Description:
+${description}
+
+From: ${email || "No email provided"}
+
+Submitted via Study Buddy Bug Box`;
+
+        // Create the mailto link
+        const mailtoLink = `mailto:idrisjose11@gmail.com?subject=Bug Report: ${encodeURIComponent(title)}&body=${encodeURIComponent(emailBody)}`;
+        
+        // Open the user's email client
+        window.location.href = mailtoLink;
+        
+        // Note: This approach opens the user's email client
+        // The form will not be cleared until they return to the page
     }
 
     return(   
@@ -26,14 +42,47 @@ export default function BugBox(){
 
                 <form className='mt-8'>
                     <label htmlFor='bug-title' className='block text-lg font-semibold text-gray-700 mb-2'>Bug Title:</label>
-                    <input type='text' value={title} onChange={(e) => setTitle(e.target.value)} id='bug-title' className='w-full p-3 border border-gray-300 rounded-lg mb-4' placeholder='Enter a brief title for the bug...' />
+                    <input 
+                        type='text' 
+                        value={title} 
+                        onChange={(e) => setTitle(e.target.value)} 
+                        id='bug-title' 
+                        className='w-full p-3 border border-gray-300 rounded-lg mb-4' 
+                        placeholder='Enter a brief title for the bug...' 
+                        required
+                    />
+                    
+                    <label htmlFor='your-email' className='block text-lg font-semibold text-gray-700 mb-2'>Your Email (optional):</label>
+                    <input 
+                        type='email' 
+                        value={email} 
+                        onChange={(e) => setEmail(e.target.value)} 
+                        id='your-email' 
+                        className='w-full p-3 border border-gray-300 rounded-lg mb-4' 
+                        placeholder='Enter your email address for follow-up...' 
+                    />
+                    
                     <label htmlFor='bug-description' className='block text-lg font-semibold text-gray-700 mb-2'>Describe the bug:</label>
-                    <textarea id='bug-description' value={description} onChange={(e) => setDescription(e.target.value)} rows='4' className='w-full p-3 border border-gray-300 rounded-lg mb-4' placeholder='Please describe the bug you encountered...'></textarea>
-                    <button type='submit' onClick={handleSubmit} className='bg-blue-600 text-white px-5 py-2 rounded-lg font-medium hover:bg-blue-700 shadow-md hover:shadow-lg transition-all'>Submit Bug</button>
-                    </form>
-
+                    <textarea 
+                        id='bug-description' 
+                        value={description} 
+                        onChange={(e) => setDescription(e.target.value)} 
+                        rows='4' 
+                        className='w-full p-3 border border-gray-300 rounded-lg mb-4' 
+                        placeholder='Please describe the bug you encountered...'
+                        required
+                    ></textarea>
+                    
+                    <button 
+                        type='submit' 
+                        onClick={handleSubmit} 
+                        className='bg-blue-600 text-white px-5 py-2 rounded-lg font-medium hover:bg-blue-700 shadow-md hover:shadow-lg transition-all disabled:bg-blue-300'
+                        disabled={!title || !description}
+                    >
+                        Submit Bug Report
+                    </button>
+                </form>
             </section>  
-
         </>
     )
 }

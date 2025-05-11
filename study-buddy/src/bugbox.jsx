@@ -1,36 +1,74 @@
-// Simple solution with direct mailto link (no backend required)
 import Navbar from './navbar.jsx';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import emailjs from '@emailjs/browser';
 
-export default function BugBox(){
+// Replace these with your actual EmailJS credentials
+const EMAILJS_PUBLIC_KEY = 'ZDuUduK4Ipy0absUV'; 
+const EMAILJS_SERVICE_ID = 'service_n3ft15s';
+const EMAILJS_TEMPLATE_ID = 'template_htiokxe'; 
+
+export default function BugBox() {
     const [description, setDescription] = useState(''); 
     const [title, setTitle] = useState('');
     const [email, setEmail] = useState('');
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitMessage, setSubmitMessage] = useState(null);
+    
+    // Initialize EmailJS when component mounts
+    useEffect(() => {
+        emailjs.init(EMAILJS_PUBLIC_KEY);
+    }, []);
       
-    const handleSubmit = (event) => {
+    const handleSubmit = async (event) => {
         event.preventDefault();
+        setIsSubmitting(true);
         
-        // Create the email body
-        const emailBody = `Bug Title: ${title}
-        
-Description:
-${description}
-
-From: ${email || "No email provided"}
-
-Submitted via Study Buddy Bug Box`;
-
-        // Create the mailto link
-        const mailtoLink = `mailto:idrisjose11@gmail.com?subject=Bug Report: ${encodeURIComponent(title)}&body=${encodeURIComponent(emailBody)}`;
-        
-        // Open the user's email client
-        window.location.href = mailtoLink;
-        
-        // Note: This approach opens the user's email client
-        // The form will not be cleared until they return to the page
+        try {
+            // Get current time for the template
+            const now = new Date();
+            const timeString = now.toLocaleString();
+            
+            // Match these exactly with your template variables
+            const templateParams = {
+                name: email || 'Anonymous User',
+                time: timeString,
+                message: `Bug Title: ${title}\n\nDescription: ${description}`,
+                to_name: 'Developer', // Optional - who the email is addressed to
+                reply_to: email || 'no-reply@example.com', // For reply functionality
+                to_email: 'idrisjose11@gmail.com' // The destination email
+            };
+            
+            // Send using EmailJS
+            const response = await emailjs.send(
+                EMAILJS_SERVICE_ID,
+                EMAILJS_TEMPLATE_ID,
+                templateParams,
+                EMAILJS_PUBLIC_KEY // Add the public key here as well
+            );
+            
+            console.log('SUCCESS!', response.status, response.text);
+            setSubmitMessage({ 
+                type: 'success', 
+                text: 'Bug report submitted successfully! Thank you for your feedback.' 
+            });
+            
+            // Clear the form fields
+            setDescription('');
+            setTitle('');
+            setEmail('');
+            
+        } catch (error) {
+            console.error('Error submitting bug report:', error);
+            setSubmitMessage({ 
+                type: 'error', 
+                text: 'Failed to submit bug report. Please try again later.' 
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
     }
 
-    return(   
+    return (   
         <>
         <Navbar /> 
         <section id='section1' className="relative px-6 py-20 overflow-hidden bg-gradient-to-b from-white to-blue-50">
@@ -40,7 +78,7 @@ Submitted via Study Buddy Bug Box`;
                 <p className='text-lg text-gray-700'>Users can submit detailed descriptions of the bugs, including steps to reproduce them, screenshots, and any other relevant information. This feedback is invaluable for improving the app's performance and user experience.</p>
                 <p className='text-lg text-gray-700'>The Bug Box is an essential part of the Study Buddy app, ensuring that users have a smooth and efficient experience while using the platform.</p>
 
-                <form className='mt-8'>
+                <form className='mt-8' onSubmit={handleSubmit}>
                     <label htmlFor='bug-title' className='block text-lg font-semibold text-gray-700 mb-2'>Bug Title:</label>
                     <input 
                         type='text' 
@@ -73,13 +111,18 @@ Submitted via Study Buddy Bug Box`;
                         required
                     ></textarea>
                     
+                    {submitMessage && (
+                        <div className={`p-3 mb-4 rounded-lg ${submitMessage.type === 'success' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                            {submitMessage.text}
+                        </div>
+                    )}
+                    
                     <button 
                         type='submit' 
-                        onClick={handleSubmit} 
                         className='bg-blue-600 text-white px-5 py-2 rounded-lg font-medium hover:bg-blue-700 shadow-md hover:shadow-lg transition-all disabled:bg-blue-300'
-                        disabled={!title || !description}
+                        disabled={!title || !description || isSubmitting}
                     >
-                        Submit Bug Report
+                        {isSubmitting ? 'Submitting...' : 'Submit Bug Report'}
                     </button>
                 </form>
             </section>  

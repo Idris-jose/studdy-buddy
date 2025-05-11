@@ -9,7 +9,10 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-app = Flask(__name__)
+base_dir = os.path.abspath(os.path.dirname(__file__))
+dist_folder = os.path.join(base_dir, '..', 'study-buddy', 'dist')
+
+app = Flask(__name__, static_folder=dist_folder, static_url_path='/')
 CORS(app)  # Enable CORS to allow React frontend to communicate
 UPLOAD_FOLDER = 'Uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)

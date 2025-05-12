@@ -119,7 +119,8 @@ export default function TqSolver() {
     }
   };
 
-  const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
+// Use environment variable for API URL
+const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
 
 const handleSolve = async () => {
   console.log("Solve button clicked");
@@ -131,7 +132,7 @@ const handleSolve = async () => {
   setError("");
   setSolutions(null);
   try {
-    console.log("Uploading PDF file...");
+    console.log("Uploading PDF file to:", `${API_URL}/upload`);
     const formData = new FormData();
     formData.append('file', file);
     const response = await fetch(`${API_URL}/upload`, {

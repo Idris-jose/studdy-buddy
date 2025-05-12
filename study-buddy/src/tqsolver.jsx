@@ -119,55 +119,56 @@ export default function TqSolver() {
     }
   };
 
-  const handleSolve = async () => {
-    console.log("Solve button clicked");
-    if (!file) {
-      setError("Please upload a .pdf file first.");
-      return;
-    }
-    setLoading(true);
-    setError("");
-    setSolutions(null);
-    try {
-      console.log("Uploading PDF file...");
-      const formData = new FormData();
-      formData.append('file', file);
-      const response = await fetch('http://127.0.0.1:5000/upload', {
-        method: 'POST',
-        body: formData,
-      });
-      console.log("Backend response status:", response.status);
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to process PDF');
-      }
-      const data = await response.json();
-      console.log("Backend data:", data);
-      if (!data.solutions || typeof data.solutions !== "object") {
-        throw new Error("Invalid solutions format returned from backend.");
-      }
-      const isValidSolution = Object.values(data.solutions).every(
-        (item) => item && typeof item === "object" && "question" in item && "solution" in item
-      );
-      if (!isValidSolution) {
-        throw new Error("Backend returned solutions in unexpected format.");
-      }
-      console.log("Parsed solutions:", data.solutions);
-      setTimeout(() => {
-        setSolutions(data.solutions);
-        setLoadingProgress(100);
-        celebrateSuccess();
-      }, 500);
-    } catch (err) {
-      setError(`Error: ${err.message}`);
-      console.error("Error details:", err);
-    } finally {
-      setTimeout(() => {
-        setLoading(false);
-      }, 600);
-    }
-  };
+  const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
 
+const handleSolve = async () => {
+  console.log("Solve button clicked");
+  if (!file) {
+    setError("Please upload a .pdf file first.");
+    return;
+  }
+  setLoading(true);
+  setError("");
+  setSolutions(null);
+  try {
+    console.log("Uploading PDF file...");
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await fetch(`${API_URL}/upload`, {
+      method: 'POST',
+      body: formData,
+    });
+    console.log("Backend response status:", response.status);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to process PDF');
+    }
+    const data = await response.json();
+    console.log("Backend data:", data);
+    if (!data.solutions || typeof data.solutions !== "object") {
+      throw new Error("Invalid solutions format returned from backend.");
+    }
+    const isValidSolution = Object.values(data.solutions).every(
+      (item) => item && typeof item === "object" && "question" in item && "solution" in item
+    );
+    if (!isValidSolution) {
+      throw new Error("Backend returned solutions in unexpected format.");
+    }
+    console.log("Parsed solutions:", data.solutions);
+    setTimeout(() => {
+      setSolutions(data.solutions);
+      setLoadingProgress(100);
+      celebrateSuccess();
+    }, 500);
+  } catch (err) {
+    setError(`Error: ${err.message}`);
+    console.error("Error details:", err);
+  } finally {
+    setTimeout(() => {
+      setLoading(false);
+    }, 600);
+  }
+};
   const handleCopySolutions = () => {
     const solutionsText = Object.entries(solutions)
       .map(([key, { question, solution, links }]) => {

@@ -3,16 +3,18 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Nav from './navbar.jsx';
 import confetti from 'canvas-confetti';
 import { useTheme } from './themecontext.jsx';
-
+import { Download,clipboard } from 'lucide-react';
 export default function NoteGenerator() {
   const [file, setFile] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [notes, setNotes] = useState('');
-  const [dragActive, setDragActive] = useState(false);
-  const [showTips, setShowTips] = useState(false);
+const [loading, setLoading] = useState(false);
+const [error, setError] = useState('');
+const [notes, setNotes] = useState('');
+const [dragActive, setDragActive] = useState(false);
+const [showTips, setShowTips] = useState(false);
+
 
   const { theme, themeColors, changeTheme } = useTheme();
+  const [loadingProgress, setLoadingProgress] = useState(0);
 
   // Animation variants
   const buttonVariants = {
@@ -92,6 +94,23 @@ export default function NoteGenerator() {
     }
   };
 
+  useEffect(() => {
+  let interval;
+  if (loading) {
+    interval = setInterval(() => {
+      setLoadingProgress(prev => {
+        const newProgress = prev + Math.random() * 15;
+        return newProgress >= 90 ? 90 : newProgress;
+      });
+    }, 500);
+  } else {
+    setLoadingProgress(0);
+  }
+
+  return () => clearInterval(interval);
+}, [loading]);
+
+
   // Handle drag and drop
   const handleDrag = (e) => {
     e.preventDefault();
@@ -114,54 +133,74 @@ export default function NoteGenerator() {
     }
   };
 
-  const handleGenerateNotes = async () => {
-    if (!file) {
-      setError('Please upload a .pdf file first.');
-      return;
+  const API_URL = 'http://127.0.0.1:5000';
+
+const handleGenerateNotes = async () => {
+  console.log("Generate Notes button clicked");
+  if (!file) {
+    setError("Please upload a .pdf file first.");
+    return;
+  }
+  
+  setLoading(true);
+  setError("");
+  setNotes("");
+  
+  try {
+    console.log("Uploading PDF file to:", `${API_URL}/generate-notes`);
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    const response = await fetch(`${API_URL}/generate-notes`, {
+      method: 'POST',
+      body: formData,
+    });
+    
+    console.log("Backend response status:", response.status);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `HTTP error ${response.status}`);
     }
-
-    setLoading(true);
-    setError('');
-    setNotes('');
-
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
-
-      const response = await fetch('http://localhost:5000/generate-notes', {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to process PDF');
-      }
-
-      const data = await response.json();
-      if (!data.notes || typeof data.notes !== 'string') {
-        throw new Error('Invalid notes format returned from backend.');
-      }
-
+    
+    const data = await response.json();
+    console.log("Raw backend response:", data); // Log the raw response
+    
+    if (!data.notes || typeof data.notes !== "string") {
+      throw new Error("Invalid notes format returned from backend.");
+    }
+    
+    console.log("Parsed notes:", data.notes.substring(0, 100) + "...");
+    
+    setTimeout(() => {
       setNotes(data.notes);
-      
-      // Celebrate success with confetti
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 }
-      });
-    } catch (err) {
-      setError(`Error: ${err.message}`);
-      console.error('Error details:', err);
-    } finally {
+      celebrateSuccess();
+    }, 500);
+    
+  } catch (err) {
+    setError(`Error: ${err.message || 'Failed to connect to the server.'}`);
+    console.error("Error details:", err);
+  } finally {
+    setTimeout(() => {
       setLoading(false);
-    }
-  };
+    }, 600);
+  }
+};
 
-  const getRandomTip = () => {
-    return studyTips[Math.floor(Math.random() * studyTips.length)];
-  };
+// Helper function for success celebration
+const celebrateSuccess = () => {
+  confetti({
+    particleCount: 100,
+    spread: 70,
+    origin: { y: 0.6 }
+  });
+};
+
+// Function to get random tip (assuming studyTips is defined elsewhere)
+const getRandomTip = () => {
+  return studyTips[Math.floor(Math.random() * studyTips.length)];
+};
+
+ 
 
   return (
     <>
@@ -316,42 +355,44 @@ export default function NoteGenerator() {
               )}
             </AnimatePresence>
 
-            {loading && (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="flex flex-col items-center justify-center space-y-3 py-4"
-              >
-                <div className="relative w-16 h-16">
+             {loading && (
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="space-y-2"
+            >
+              <div className="flex items-center justify-between">
+                <span className={`text-xs ${themeColors[theme].text}`}>Analyzing questions...</span>
+                <span className={`text-xs ${themeColors[theme].text}`}>{Math.round(loadingProgress)}%</span>
+              </div>
+              <div className="h-2 bg-white bg-opacity-20 rounded-full overflow-hidden">
+                <motion.div 
+                  className={`h-full bg-gradient-to-r ${themeColors[theme].gradient}`}
+                  initial={{ width: "0%" }}
+                  animate={{ width: `${loadingProgress}%` }}
+                  transition={{ ease: "easeInOut" }}
+                />
+              </div>
+              <div className="flex justify-center space-x-2 mt-2">
+                {[0, 1, 2].map((i) => (
                   <motion.div
+                    key={i}
+                    className={`w-2 h-2 rounded-full bg-gradient-to-r ${themeColors[theme].gradient}`}
                     animate={{
-                      rotate: 360,
+                      scale: [1, 1.5, 1],
+                      opacity: [0.7, 1, 0.7],
                     }}
                     transition={{
-                      duration: 1.5,
+                      duration: 1,
                       repeat: Infinity,
-                      ease: "linear"
+                      delay: i * 0.2,
                     }}
-                    className={`absolute inset-0 rounded-full border-t-2 border-b-2 ${themeColors[theme].border}`}
-                  ></motion.div>
-                  <motion.div
-                    animate={{
-                      rotate: -360,
-                    }}
-                    transition={{
-                      duration: 3,
-                      repeat: Infinity,
-                      ease: "linear"
-                    }}
-                    className={`absolute inset-2 rounded-full border-r-2 border-l-2 ${themeColors[theme].border}`}
-                  ></motion.div>
-                </div>
-                <span className={`${themeColors[theme].text} font-medium`}>Creating your smart notes...</span>
-                <p className={`text-xs ${themeColors[theme].text} max-w-xs text-center`}>
-                  Our AI is analyzing your document, extracting key concepts, and organizing the information.
-                </p>
-              </motion.div>
-            )}
+                  />
+                ))}
+              </div>
+            </motion.div>
+          )}
 
             {file && !loading && (
               <motion.button
@@ -405,30 +446,26 @@ export default function NoteGenerator() {
                       }
                     }}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                      <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
-                      <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
-                    </svg>
+                    <clipboard /> 
                   </motion.button>
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-black"
+                    className=" rounded-full bg-white/10 hover:bg-white/20 text-black"
                     title="Download as text file"
                     onClick={() => {
-                      const element = document.createElement("a");
-                      const file = new Blob([notes], {type: 'text/plain'});
-                      element.href = URL.createObjectURL(file);
-                      element.download = "study_notes.txt";
-                      document.body.appendChild(element);
-                      element.click();
-                      document.body.removeChild(element);
+                   const blob = new Blob([notes], { type: 'text/plain' });
+                   const link = document.createElement('a');
+                   link.href = window.URL.createObjectURL(blob);
+                   link.download = 'study_notes.txt';
+                   document.body.appendChild(link);
+                   link.click();
+                   document.body.removeChild(link);
+                   window.URL.revokeObjectURL(link.href); // clean up
+
                     }}
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                      <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-                      <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
-                    </svg>
+                    <Download  />
                   </motion.button>
                 </div>
                 <div id="copy-notification" className="fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg transition-opacity duration-300 opacity-0">

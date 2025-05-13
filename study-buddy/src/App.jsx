@@ -70,7 +70,7 @@ function App() {
             {/* Timetable route */}
             <Route path="/timetable" element={<Timetable />} />
             {/* Syllabus route */}
-           
+            <Route path="/syllabus" element={< Syllabus />} />
             {/* TQ Solver route */}
             <Route path="/tqsolver" element={<TqSolver />} />
             {/* Catch-all route for 404 Not Found */}

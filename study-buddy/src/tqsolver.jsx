@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from "react";
 import confetti from 'canvas-confetti';
 import { useTheme } from './themecontext.jsx';
-
+import { Download,clipboard } from 'lucide-react';
 export default function TqSolver() {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -119,8 +119,8 @@ export default function TqSolver() {
     }
   };
 
-// Use environment variable for API URL
-const API_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:5000';
+// Use environment variable for API URL with a fallback
+const API_URL = (typeof process !== 'undefined' && process.env.REACT_APP_API_URL) || 'http://127.0.0.1:5000';
 
 const handleSolve = async () => {
   console.log("Solve button clicked");
@@ -141,11 +141,11 @@ const handleSolve = async () => {
     });
     console.log("Backend response status:", response.status);
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Failed to process PDF');
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `HTTP error ${response.status}`);
     }
     const data = await response.json();
-    console.log("Backend data:", data);
+    console.log("Raw backend response:", data); // Log the raw response
     if (!data.solutions || typeof data.solutions !== "object") {
       throw new Error("Invalid solutions format returned from backend.");
     }
@@ -162,7 +162,7 @@ const handleSolve = async () => {
       celebrateSuccess();
     }, 500);
   } catch (err) {
-    setError(`Error: ${err.message}`);
+    setError(`Error: ${err.message || 'Failed to connect to the server.'}`);
     console.error("Error details:", err);
   } finally {
     setTimeout(() => {
@@ -170,42 +170,59 @@ const handleSolve = async () => {
     }, 600);
   }
 };
-  const handleCopySolutions = () => {
-    const solutionsText = Object.entries(solutions)
-      .map(([key, { question, solution, links }]) => {
-        let text = `${key}: ${question}\nSolution: ${solution}`;
-        if (links && links.length > 0) {
-          text += `\nExplore More:\n${links.join('\n')}`;
-        }
-        return text;
-      })
-      .join('\n\n');
-    navigator.clipboard.writeText(solutionsText);
+ const handleCopySolutions = () => {
+  if (!solutions) {
+    alert("No solutions available to copy.");
+    return;
+  }
+
+  const solutionsText = Object.entries(solutions)
+    .map(([key, { question, solution, links }]) => {
+      let text = `${key}: ${question}\nSolution: ${solution}`;
+      if (links && links.length > 0) {
+        text += `\nExplore More:\n${links.join('\n')}`;
+      }
+      return text;
+    })
+    .join('\n\n');
+
+  navigator.clipboard.writeText(solutionsText).then(() => {
     const notification = document.getElementById('copy-notification');
     if (notification) {
       notification.classList.remove('opacity-0');
       setTimeout(() => notification.classList.add('opacity-0'), 2000);
     }
-  };
+  }).catch(err => {
+    console.error("Clipboard write failed:", err);
+    alert("Failed to copy to clipboard.");
+  });
+};
 
-  const handleDownloadSolutions = () => {
-    const solutionsText = Object.entries(solutions)
-      .map(([key, { question, solution, links }]) => {
-        let text = `${key}: ${question}\nSolution: ${solution}`;
-        if (links && links.length > 0) {
-          text += `\nExplore More:\n${links.join('\n')}`;
-        }
-        return text;
-      })
-      .join('\n\n');
-    const element = document.createElement("a");
-    const file = new Blob([solutionsText], { type: 'text/plain' });
-    element.href = URL.createObjectURL(file);
-    element.download = "solutions.txt";
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
-  };
+const handleDownloadSolutions = () => {
+  if (!solutions) {
+    alert("No solutions available to download.");
+    return;
+  }
+
+  const solutionsText = Object.entries(solutions)
+    .map(([key, { question, solution, links }]) => {
+      let text = `${key}: ${question}\nSolution: ${solution}`;
+      if (links && links.length > 0) {
+        text += `\nExplore More:\n${links.join('\n')}`;
+      }
+      return text;
+    })
+    .join('\n\n');
+
+  const blob = new Blob([solutionsText], { type: 'text/plain' });
+  const link = document.createElement('a');
+  link.href = window.URL.createObjectURL(blob);
+  link.download = 'solutions.txt';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  window.URL.revokeObjectURL(link.href);
+};
 
   return (
     <>
@@ -412,7 +429,7 @@ const handleSolve = async () => {
                       title="Copy to clipboard"
                       onClick={handleCopySolutions}
                     >
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                      <svg xmlns="http://www.w3.org/20</svg></svg>00/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                         <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
                         <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
                       </svg>

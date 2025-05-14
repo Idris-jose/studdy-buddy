@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Nav from './navbar.jsx';
 import confetti from 'canvas-confetti';
 import { useTheme } from './themecontext.jsx';
-import { Download } from 'lucide-react';
+import { Download,clipboard } from 'lucide-react';
 export default function NoteGenerator() {
   const [file, setFile] = useState(null);
 const [loading, setLoading] = useState(false);
@@ -133,7 +133,8 @@ const [showTips, setShowTips] = useState(false);
     }
   };
 
-  const API_URL = 'http://127.0.0.1:5000';
+  const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5000';
+
 
 const handleGenerateNotes = async () => {
   console.log("Generate Notes button clicked");
@@ -446,7 +447,7 @@ const getRandomTip = () => {
                       }
                     }}
                   >
-                    <clipboard /> 
+                    <clipboard />
                   </motion.button>
                   <motion.button
                     whileHover={{ scale: 1.1 }}

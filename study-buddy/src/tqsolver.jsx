@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from "react";
 import confetti from 'canvas-confetti';
 import { useTheme } from './themecontext.jsx';
-import { Download,clipboard } from 'lucide-react';
+
 export default function TqSolver() {
   const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);

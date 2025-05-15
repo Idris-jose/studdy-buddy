@@ -120,7 +120,7 @@ export default function TqSolver() {
   };
 
 // Use environment variable for API URL with a fallback
-const API_URL = import.meta.env.VITE_API_URL || 'http://127.0.0.1:10000';
+const API_URL = import.meta.env.API_URL || 'http://127.0.0.1:10000';
 
 
 const handleSolve = async () => {

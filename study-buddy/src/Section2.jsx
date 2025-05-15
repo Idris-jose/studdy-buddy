@@ -89,6 +89,9 @@ export default function Section2() {
           id={`feature-detail-${activeFeature}`}
           className="bg-white p-6 rounded-xl shadow-lg border-l-4 border-blue-500 w-full transition-all duration-300"
         >
+          <div className={`w-10 h-10 rounded-full flex items-center justify-center mb-2`}>
+                {features[activeFeature].icon}
+              </div>
           <h3 className="text-xl font-bold text-gray-900 mb-2">{features[activeFeature].title}</h3>
           <p className="text-gray-700">{features[activeFeature].description}</p>
         </div>

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Nav from './navbar.jsx';
 import confetti from 'canvas-confetti';
-import { useTheme } from './themecontext.jsx';
+import { useTheme } from '../themecontext.jsx';
 import { Download } from 'lucide-react';
 export default function NoteGenerator() {
   const [file, setFile] = useState(null);

@@ -1,7 +1,7 @@
 import {  NavLink,useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { Menu, X, BookOpen } from 'lucide-react';
-import { supabase } from './client.js';
+import { supabase } from '../client.js';
 
 export default function Nav() {
   const navigate = useNavigate();

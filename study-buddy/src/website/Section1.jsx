@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
-import studyImage from './assets/pexels-ivan-samkov-4458554.jpg';
+import studyImage from '../assets/pexels-ivan-samkov-4458554.jpg';
 import { BookOpen, Calendar, Clock, Sparkles } from 'lucide-react';
 
 export default function Section1() {

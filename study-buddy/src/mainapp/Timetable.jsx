@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import Nav from './navbar.jsx';
-import { useTheme } from './themecontext.jsx';
+import { useTheme } from '../themecontext.jsx';
 
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 

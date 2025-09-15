@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import Nav from './navbar.jsx';
-import { useTheme } from './themecontext.jsx';
+import { useTheme } from '../themecontext.jsx';
 
 export default function CourseInput() {
   const [courseName, setCourseName] = useState(() => {

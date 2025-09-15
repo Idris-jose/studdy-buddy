@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BookOpen, Calendar, Globe, CheckCircle, AlertCircle, Award, ChevronDown, ChevronUp, Download, Book, Coffee, Zap } from 'lucide-react';
 import Nav from './navbar.jsx';
-import { useTheme } from './themecontext.jsx';
+import { useTheme } from '../themecontext.jsx';
 
 export default function SyllabusInput() {
   const location = useLocation();

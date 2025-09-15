@@ -1,22 +1,24 @@
 // App.jsx - Updated with PDF worker import
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import Header from './Header.jsx';
-import Section1 from './Section1.jsx';
-import Section2 from './Section2.jsx';
-import Section3 from './Section3.jsx';
-import Footer from './Footer.jsx';
-import Signup from './Signup.jsx';
-import Login from './Login.jsx';
+import Header from './website/Header.jsx';
+import Section1 from './website/Section1.jsx';
+import Section2 from './website/Section2.jsx';
+import Section3 from './website/Section3.jsx';
+import Footer from './website/Footer.jsx';
+import Signup from './Auth/Signup.jsx';
+import Login from './Auth/Login.jsx';
 import Demo from './Demo.jsx';
-import MainApp from './mainapp.jsx';
-import CourseInput from './CourseInput.jsx';
-import Timetable from './Timetable.jsx';
-import Syllabus from './syllabus.jsx';
-import TqSolver from './tqsolver.jsx'; 
+import MainApp from './mainapp/mainapp.jsx';
+import CourseInput from './mainapp/CourseInput.jsx';
+import Timetable from './mainapp/Timetable.jsx';
+import Syllabus from './mainapp/syllabus.jsx';
+import TqSolver from './mainapp/tqsolver.jsx';
 import ErrorBoundary from './Errorboundary.jsx';
-import NoteGenerator from './NoteGenerator.jsx';
-import About from './about.jsx';
-import BugBox from './bugbox.jsx';
+import NoteGenerator from './mainapp/NoteGenerator.jsx';
+import About from './mainapp/about.jsx';
+import BugBox from './mainapp/bugbox.jsx';
+
+import { AuthProvider } from './Auth/AuthContext.jsx';
 import { ThemeProvider } from './themecontext.jsx';
 // Load the PDF worker configuration early in the application lifecycle
 import './pdfWorker.js';
@@ -51,6 +53,7 @@ const NotFound = () => (
 function App() {
   return (
     <BrowserRouter>
+    <AuthProvider>
       <ThemeProvider>
       <ErrorBoundary>
       <div className="flex flex-col min-h-screen">
@@ -86,6 +89,7 @@ function App() {
       </div>
       </ErrorBoundary>
       </ThemeProvider>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

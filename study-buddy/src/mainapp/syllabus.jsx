@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen, Calendar, Globe, CheckCircle, AlertCircle, Award, ChevronDown, ChevronUp, Download, Book, Coffee, Zap } from 'lucide-react';
+import { BookOpen, Calendar, Globe, AlertCircle, Award, ChevronDown, Download, Book, Coffee, Zap } from 'lucide-react';
 import Nav from './navbar.jsx';
 import { useTheme } from '../themecontext.jsx';
 
@@ -20,7 +19,6 @@ export default function SyllabusInput() {
   const [generationComplete, setGenerationComplete] = useState(false);
 
   const { theme, themeColors } = useTheme();
-
   const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
   useEffect(() => {
@@ -28,31 +26,6 @@ export default function SyllabusInput() {
       setError('No courses available. Please add courses first.');
     }
   }, [courses]);
-
-  const inputVariants = {
-    focus: { scale: 1.02, borderColor: '#3B82F6', transition: { duration: 0.2 } },
-    blur: { scale: 1, borderColor: '#D1D5DB', transition: { duration: 0.2 } },
-  };
-
-  const cardVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } },
-  };
-
-  const errorVariants = {
-    hidden: { opacity: 0, y: -20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
-  };
-
-  const listItemVariants = {
-    hidden: { opacity: 0, x: -20 },
-    visible: i => ({
-      opacity: 1,
-      x: 0,
-      transition: { delay: i * 0.1, duration: 0.3 }
-    }),
-    hover: { scale: 1.02, x: 5, transition: { duration: 0.2 } }
-  };
 
   const handleTopicChange = (index, value) => {
     const newTopics = [...topics];
@@ -235,21 +208,11 @@ export default function SyllabusInput() {
     <>
       <Nav />
       <div className={`min-h-screen bg-gradient-to-br ${themeColors[theme].bg} flex flex-col items-center justify-center p-6 pt-20`}>
-        <motion.h1
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6, ease: 'easeOut' }}
-          className={`text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r ${themeColors[theme].gradient} mb-2 text-center`}
-        >
+        <h1 className={`text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r ${themeColors[theme].gradient} mb-2 text-center`}>
           Craft Your Creative Syllabus
-        </motion.h1>
+        </h1>
         
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-          className={`text-lg ${themeColors[theme].text} mb-8 text-center max-w-xl`}
-        >
+        <div className={`text-lg ${themeColors[theme].text} mb-8 text-center max-w-xl`}>
           <p>Transform your course into an engaging learning journey with a personalized syllabus.</p>
           <div className="flex items-center justify-center mt-2 space-x-2">
             <span className="flex items-center text-sm px-2 py-1 rounded-full bg-white">
@@ -262,38 +225,26 @@ export default function SyllabusInput() {
               <Globe size={14} className="mr-1" /> Curated Resources
             </span>
           </div>
-        </motion.div>
+        </div>
 
         {error && (
-          <motion.div
-            variants={errorVariants}
-            initial="hidden"
-            animate="visible"
-            className="w-full max-w-2xl text-center bg-red-50 p-4 rounded-lg mb-6"
-          >
+          <div className="w-full max-w-2xl text-center bg-red-50 p-4 rounded-lg mb-6">
             <div className="flex items-center justify-center mb-2">
               <AlertCircle size={20} className="text-red-500 mr-2" />
               <p className="text-red-500 text-lg">{error}</p>
             </div>
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+            <button
               onClick={() => navigate('/course-input')}
               className={`bg-gradient-to-r ${themeColors[theme].gradient} ${themeColors[theme].hover} text-white font-bold py-3 px-6 rounded-lg transition-all duration-300`}
             >
               Go to Course Input
-            </motion.button>
-          </motion.div>
+            </button>
+          </div>
         )}
 
         {!error && (
           <div className="w-full max-w-lg">
-            <motion.div 
-              className="bg-white/10 backdrop-blur-md rounded-2xl shadow-xl p-8 mb-6 border"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, ease: 'easeOut' }}
-            >
+            <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-xl p-8 mb-6 border">
               <form onSubmit={handleSubmit}>
                 <div className="mb-6">
                   <label
@@ -302,14 +253,11 @@ export default function SyllabusInput() {
                   >
                     <BookOpen size={16} className="mr-2" /> Select Course
                   </label>
-                  <motion.select
+                  <select
                     id="course-select"
                     value={selectedCourse}
                     onChange={(e) => setSelectedCourse(e.target.value)}
                     className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-800 text-white"
-                    variants={inputVariants}
-                    whileFocus="focus"
-                    initial="blur"
                   >
                     <option value="">Select a course</option>
                     {courses.map((course) => (
@@ -317,7 +265,7 @@ export default function SyllabusInput() {
                         {course.courseName} ({course.courseCode})
                       </option>
                     ))}
-                  </motion.select>
+                  </select>
                 </div>
 
                 <div className="mb-6">
@@ -325,36 +273,25 @@ export default function SyllabusInput() {
                     <label className={`block text-sm font-semibold flex items-center ${themeColors[theme].text}`}>
                       <Book size={16} className="mr-2" /> Key Topics
                     </label>
-                    <motion.button
+                    <button
                       type="button"
                       onClick={generateRandomTopics}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
                       className={`text-xs px-2 py-1 rounded bg-gradient-to-r ${themeColors[theme].gradient} ${themeColors[theme].hover} text-white transition-all`}
                     >
                       Inspire Me
-                    </motion.button>
+                    </button>
                   </div>
 
                   {topics.map((topic, index) => (
-                    <motion.div 
-                      key={index} 
-                      className="mb-3"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1, duration: 0.3 }}
-                    >
-                      <motion.input
+                    <div key={index} className="mb-3">
+                      <input
                         type="text"
                         value={topic}
                         onChange={(e) => handleTopicChange(index, e.target.value)}
                         placeholder={`Topic ${index + 1} (e.g., ${['Quantum Computing', 'Design Thinking', 'Renaissance Art'][index]})`}
                         className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-800 text-white"
-                        variants={inputVariants}
-                        whileFocus="focus"
-                        initial="blur"
                       />
-                    </motion.div>
+                    </div>
                   ))}
                 </div>
 
@@ -366,20 +303,17 @@ export default function SyllabusInput() {
                     >
                       Learning Style
                     </label>
-                    <motion.select
+                    <select
                       id="learning-style"
                       value={learningStyle}
                       onChange={(e) => setLearningStyle(e.target.value)}
                       className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-800 text-white"
-                      variants={inputVariants}
-                      whileFocus="focus"
-                      initial="blur"
                     >
                       <option value="balanced">Balanced</option>
                       <option value="visual">Visual Learner</option>
                       <option value="practical">Practical</option>
                       <option value="theoretical">Theoretical</option>
-                    </motion.select>
+                    </select>
                   </div>
 
                   <div>
@@ -389,27 +323,22 @@ export default function SyllabusInput() {
                     >
                       Difficulty Level
                     </label>
-                    <motion.select
+                    <select
                       id="difficulty"
                       value={difficulty}
                       onChange={(e) => setDifficulty(e.target.value)}
                       className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-800 text-white"
-                      variants={inputVariants}
-                      whileFocus="focus"
-                      initial="blur"
                     >
                       <option value="beginner">Beginner</option>
                       <option value="intermediate">Intermediate</option>
                       <option value="advanced">Advanced</option>
-                    </motion.select>
+                    </select>
                   </div>
                 </div>
 
-                <motion.button
+                <button
                   type="submit"
                   disabled={loading}
-                  whileHover={{ scale: !loading ? 1.05 : 1 }}
-                  whileTap={{ scale: !loading ? 0.95 : 1 }}
                   className={`w-full py-3 rounded-lg font-bold text-white transition-all duration-300 ${
                     loading
                       ? 'bg-gray-400 cursor-not-allowed'
@@ -427,29 +356,22 @@ export default function SyllabusInput() {
                   ) : (
                     'Create My Syllabus'
                   )}
-                </motion.button>
+                </button>
               </form>
-            </motion.div>
+            </div>
           </div>
         )}
 
         {generationComplete && syllabus.length > 0 && (
-          <motion.div 
-            className="mt-4 w-full max-w-2xl"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.5 }}
-          >
+          <div className="mt-4 w-full max-w-2xl">
             <div className="flex justify-between items-center mb-4">
               <h2 className={`text-2xl font-bold ${themeColors[theme].text}`}>Your Creative Syllabus</h2>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
+              <button
                 onClick={handleDownloadPDF}
                 className={`flex items-center text-sm px-3 py-2 rounded-lg bg-gradient-to-r ${themeColors[theme].gradient} ${themeColors[theme].hover} text-white transition-all`}
               >
                 <Download size={16} className="mr-1" /> Export PDF
-              </motion.button>
+              </button>
             </div>
             
             <div className="bg-white/10 backdrop-blur-md rounded-lg shadow-lg overflow-hidden border">
@@ -471,121 +393,95 @@ export default function SyllabusInput() {
               )}
               
               <div className="p-6">
-                <AnimatePresence>
-                  {syllabus.map((entry, index) => (
-                    <motion.div
-                      key={index}
-                      variants={cardVariants}
-                      initial="hidden"
-                      animate="visible"
-                      transition={{ delay: index * 0.1 }}
-                      className={`mb-4 p-4 rounded-lg border ${themeColors[theme].border} overflow-hidden`}
+                {syllabus.map((entry, index) => (
+                  <div
+                    key={index}
+                    className={`mb-4 p-4 rounded-lg border ${themeColors[theme].border} overflow-hidden`}
+                  >
+                    <div 
+                      className="cursor-pointer"
+                      onClick={() => toggleWeekExpansion(entry.week)}
                     >
-                      <div 
-                        className="cursor-pointer"
-                        onClick={() => toggleWeekExpansion(entry.week)}
-                      >
-                        <div className="flex justify-between items-center">
-                          <div className="flex items-start">
-                            <div className={`h-8 w-8 rounded-full flex items-center justify-center bg-gradient-to-r ${themeColors[theme].gradient} mr-3 text-white`}>
-                              {entry.week}
-                            </div>
-                            <div>
-                              <h3 className={`text-lg font-semibold ${themeColors[theme].text}`}>
-                                {entry.title || `Week ${entry.week}: ${entry.topic}`}
-                              </h3>
-                              <p className={`text-sm ${themeColors[theme].text}`}>{entry.topic}</p>
-                            </div>
+                      <div className="flex justify-between items-center">
+                        <div className="flex items-start">
+                          <div className={`h-8 w-8 rounded-full flex items-center justify-center bg-gradient-to-r ${themeColors[theme].gradient} mr-3 text-white`}>
+                            {entry.week}
                           </div>
-                          <motion.div
-                            animate={{ rotate: expandedWeek === entry.week ? 180 : 0 }}
-                            transition={{ duration: 0.3 }}
-                          >
-                            <ChevronDown size={20} className="text-gray-300" />
-                          </motion.div>
+                          <div>
+                            <h3 className={`text-lg font-semibold ${themeColors[theme].text}`}>
+                              {entry.title || `Week ${entry.week}: ${entry.topic}`}
+                            </h3>
+                            <p className={`text-sm ${themeColors[theme].text}`}>{entry.topic}</p>
+                          </div>
+                        </div>
+                        <div className={`transform transition-transform ${expandedWeek === entry.week ? 'rotate-180' : ''}`}>
+                          <ChevronDown size={20} className="text-gray-300" />
                         </div>
                       </div>
-                      
-                      <AnimatePresence>
-                        {expandedWeek === entry.week && (
-                          <motion.div
-                            initial={{ opacity: 0, height: 0 }}
-                            animate={{ opacity: 1, height: 'auto' }}
-                            exit={{ opacity: 0, height: 0 }}
-                            transition={{ duration: 0.3 }}
-                            className="mt-4 overflow-hidden"
-                          >
-                            <div className="border-t pt-4 mt-2">
-                              <div className="mb-3">
-                                <h4 className={`text-sm font-semibold mb-1 ${themeColors[theme].text}`}>Readings & Resources</h4>
-                                <p className={`text-sm ${themeColors[theme].text}`}>{entry.readings}</p>
-                              </div>
-                              
-                              {entry.links && entry.links.length > 0 && (
-                                <div className="mb-3">
-                                  <h4 className={`text-sm font-semibold mb-1 ${themeColors[theme].text}`}>Online Resources</h4>
-                                  <ul className="space-y-1">
-                                    {entry.links.map((link, linkIndex) => (
-                                      <motion.li 
-                                        key={linkIndex}
-                                        custom={linkIndex}
-                                        variants={listItemVariants}
-                                        initial="hidden"
-                                        animate="visible"
-                                        whileHover="hover"
-                                        className="flex items-center text-sm"
-                                      >
-                                        <Globe size={14} className={`mr-2 ${themeColors[theme].text}`} />
-                                        <a
-                                          href={link}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          className={`${themeColors[theme].text} hover:underline`}
-                                        >
-                                          {link.length > 60 ? link.substring(0, 60) + '...' : link}
-                                        </a>
-                                      </motion.li>
-                                    ))}
-                                  </ul>
-                                </div>
-                              )}
-                              
-                              {entry.challenge && (
-                                <div className="mb-3">
-                                  <h4 className={`text-sm font-semibold mb-1 flex items-center ${themeColors[theme].text}`}>
-                                    <Award size={14} className="mr-1" /> Weekly Challenge
-                                  </h4>
-                                  <p className={`text-sm ${themeColors[theme].text}`}>{entry.challenge}</p>
-                                </div>
-                              )}
-                              
-                              {entry.quote && (
-                                <div className={`mt-4 p-3 rounded-lg bg-white/10 backdrop-blur-md italic`}>
-                                  <p className={`text-sm ${themeColors[theme].text}`}>"{entry.quote}"</p>
-                                  {entry.author && <p className={`text-right text-xs mt-1 ${themeColors[theme].text}`}>— {entry.author}</p>}
-                                </div>
-                              )}
+                    </div>
+                    
+                    {expandedWeek === entry.week && (
+                      <div className="mt-4 overflow-hidden">
+                        <div className="border-t pt-4 mt-2">
+                          <div className="mb-3">
+                            <h4 className={`text-sm font-semibold mb-1 ${themeColors[theme].text}`}>Readings & Resources</h4>
+                            <p className={`text-sm ${themeColors[theme].text}`}>{entry.readings}</p>
+                          </div>
+                          
+                          {entry.links && entry.links.length > 0 && (
+                            <div className="mb-3">
+                              <h4 className={`text-sm font-semibold mb-1 ${themeColors[theme].text}`}>Online Resources</h4>
+                              <ul className="space-y-1">
+                                {entry.links.map((link, linkIndex) => (
+                                  <li 
+                                    key={linkIndex}
+                                    className="flex items-center text-sm"
+                                  >
+                                    <Globe size={14} className={`mr-2 ${themeColors[theme].text}`} />
+                                    <a
+                                      href={link}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className={`${themeColors[theme].text} hover:underline`}
+                                    >
+                                      {link.length > 60 ? link.substring(0, 60) + '...' : link}
+                                    </a>
+                                  </li>
+                                ))}
+                              </ul>
                             </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
+                          )}
+                          
+                          {entry.challenge && (
+                            <div className="mb-3">
+                              <h4 className={`text-sm font-semibold mb-1 flex items-center ${themeColors[theme].text}`}>
+                                <Award size={14} className="mr-1" /> Weekly Challenge
+                              </h4>
+                              <p className={`text-sm ${themeColors[theme].text}`}>{entry.challenge}</p>
+                            </div>
+                          )}
+                          
+                          {entry.quote && (
+                            <div className={`mt-4 p-3 rounded-lg bg-white/10 backdrop-blur-md italic`}>
+                              <p className={`text-sm ${themeColors[theme].text}`}>"{entry.quote}"</p>
+                              {entry.author && <p className={`text-right text-xs mt-1 ${themeColors[theme].text}`}>— {entry.author}</p>}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
                 
                 <div className="flex mt-6 space-x-4">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                  <button
                     onClick={() => navigate('/timetable', { state: { courses } })}
                     className={`flex-1 bg-gradient-to-r ${themeColors[theme].gradient} ${themeColors[theme].hover} text-white font-bold py-3 rounded-lg transition-all duration-300 flex items-center justify-center`}
                   >
                     <Calendar size={18} className="mr-2" /> View Timetable
-                  </motion.button>
+                  </button>
                   
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
+                  <button
                     onClick={() => {
                       setSyllabus([]);
                       setGenerationComplete(false);
@@ -593,11 +489,11 @@ export default function SyllabusInput() {
                     className={`px-4 py-3 rounded-lg border ${themeColors[theme].border} text-gray-300 hover:bg-gray-800/20 transition-all duration-300`}
                   >
                     Start Over
-                  </motion.button>
+                  </button>
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
         )}
       </div>
     </>

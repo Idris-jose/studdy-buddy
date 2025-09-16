@@ -80,7 +80,7 @@ export default function Nav() {
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${
         isScrolled 
           ? "bg-white text-gray-800 shadow-lg" 
-          : "bg-transparent text-gray-800 md:text-white"
+          : "bg-white text-gray-800 md:text-white"
       }`}
       aria-label="Main Navigation"
     >

@@ -65,51 +65,6 @@ const [courses, setCourses] = useState(() => {
     'default': BookOpen
   };
 
-  const getIcon = (code) => {
-    const lowerCode = code.toLowerCase();
-    // Check if code starts with any of the keys in courseIcons
-    for (const prefix in courseIcons) {
-      if (lowerCode.startsWith(prefix)) {
-        return courseIcons[prefix];
-      }
-    }
-    return courseIcons.default;
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    setError('');
-    setSuccess('');
-
-    // Validation
-    if (!courseName.trim() || !courseCode.trim() || !unit) {
-      setError('All fields are required');
-      return;
-    }
-    if (isNaN(unit) || unit < 1 || unit > 6) {
-      setError('Units must be a number between 1 and 6');
-      return;
-    }
-    if (courseName.length > 50) {
-      setError('Course name must be under 50 characters');
-      return;
-    }
-
-    // Check for duplicate course codes
-    if (courses.some(course => course.courseCode.toLowerCase() === courseCode.trim().toLowerCase())) {
-      setError('Course code already exists');
-      return;
-    }
-
-    const newCourse = { 
-  courseName: courseName.trim(), 
-  courseCode: courseCode.trim(), 
-  unit: parseInt(unit),
-  iconKey: getIconKey(courseCode.trim()) // Store just the key, not the component
-};
-
-
-
 const getIconKey = (code) => {
   const lowerCode = code.toLowerCase();
   for (const prefix in courseIcons) {
@@ -120,20 +75,53 @@ const getIconKey = (code) => {
   return 'default';
 };
 
+  const handleSubmit = (event) => {
+  event.preventDefault();
+  setError('');
+  setSuccess('');
 
-    setCourses([...courses, newCourse]);
-    setCourseName('');
-    setCourseCode('');
-    setUnit('');
-    
-    // Show success message
-    setSuccess(`${newCourse.courseName} added successfully!`);
-    
-    // Clear success message after 3 seconds
-    setTimeout(() => {
-      setSuccess('');
-    }, 3000);
+  // Validation
+  if (!courseName.trim() || !courseCode.trim() || !unit) {
+    setError('All fields are required');
+    return;
+  }
+  if (isNaN(unit) || unit < 1 || unit > 6) {
+    setError('Units must be a number between 1 and 6');
+    return;
+  }
+  if (courseName.length > 50) {
+    setError('Course name must be under 50 characters');
+    return;
+  }
+
+  // Check for duplicate course codes
+  if (courses.some(course => course.courseCode.toLowerCase() === courseCode.trim().toLowerCase())) {
+    setError('Course code already exists');
+    return;
+  }
+
+  const newCourse = { 
+    courseName: courseName.trim(), 
+    courseCode: courseCode.trim(), 
+    unit: parseInt(unit),
+    iconKey: getIconKey(courseCode.trim()) // Now this will work
   };
+
+  // Remove the duplicate getIconKey function from here
+  setCourses([...courses, newCourse]);
+  setCourseName('');
+  setCourseCode('');
+  setUnit('');
+  
+  // Show success message
+  setSuccess(`${newCourse.courseName} added successfully!`);
+  
+  // Clear success message after 3 seconds
+  setTimeout(() => {
+    setSuccess('');
+  }, 3000);
+};
+
 
   const handleDelete = (index) => {
     setCourses(courses.filter((_, i) => i !== index));

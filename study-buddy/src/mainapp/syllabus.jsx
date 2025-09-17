@@ -1,8 +1,23 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { BookOpen, Calendar, Globe, AlertCircle, Award, ChevronDown, Download, Book, Coffee, Zap } from 'lucide-react';
+import { 
+  BookOpen, 
+  Calendar, 
+  Globe, 
+  AlertCircle, 
+  Award, 
+  ChevronDown, 
+  Download, 
+  Book, 
+  Monitor, 
+  Settings, 
+  Users, 
+  GraduationCap,
+  Clock,
+  Target,
+  Lightbulb
+} from 'lucide-react';
 import Nav from './navbar.jsx';
-import { useTheme } from '../themecontext.jsx';
 
 export default function SyllabusInput() {
   const location = useLocation();
@@ -18,7 +33,6 @@ export default function SyllabusInput() {
   const [expandedWeek, setExpandedWeek] = useState(null);
   const [generationComplete, setGenerationComplete] = useState(false);
 
-  const { theme, themeColors } = useTheme();
   const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
   useEffect(() => {
@@ -37,41 +51,22 @@ export default function SyllabusInput() {
     setExpandedWeek(expandedWeek === weekNum ? null : weekNum);
   };
 
-  const getDifficultyEmoji = () => {
+  const getDifficultyLevel = () => {
     switch (difficulty) {
-      case 'beginner': return '☕ Easy';
-      case 'intermediate': return '☕☕ Moderate';
-      case 'advanced': return '☕☕☕ Challenging';
-      default: return '☕☕ Moderate';
+      case 'beginner': return { text: 'Beginner Level', color: 'bg-green-100 text-green-800 border-green-200' };
+      case 'intermediate': return { text: 'Intermediate Level', color: 'bg-yellow-100 text-yellow-800 border-yellow-200' };
+      case 'advanced': return { text: 'Advanced Level', color: 'bg-red-100 text-red-800 border-red-200' };
+      default: return { text: 'Intermediate Level', color: 'bg-yellow-100 text-yellow-800 border-yellow-200' };
     }
   };
 
-  const getDifficultyColor = () => {
-    switch (difficulty) {
-      case 'beginner': return 'bg-green-100 text-green-800';
-      case 'intermediate': return 'bg-amber-100 text-amber-800';
-      case 'advanced': return 'bg-red-100 text-red-800';
-      default: return 'bg-amber-100 text-amber-800';
-    }
-  };
-
-  const getLearningStyleIcon = () => {
+  const getLearningStyleInfo = () => {
     switch (learningStyle) {
-      case 'visual': return <Globe size={18} />;
-      case 'practical': return <Coffee size={18} />;
-      case 'theoretical': return <Book size={18} />;
-      case 'balanced': return <Zap size={18} />;
-      default: return <Zap size={18} />;
-    }
-  };
-
-  const getLearningStyleDescription = () => {
-    switch (learningStyle) {
-      case 'visual': return 'Emphasis on visual resources like videos and diagrams';
-      case 'practical': return 'Focus on hands-on exercises and practical applications';
-      case 'theoretical': return 'Deep theoretical foundations and academic papers';
-      case 'balanced': return 'Mix of theoretical and practical resources';
-      default: return 'Mix of theoretical and practical resources';
+      case 'visual': return { icon: Monitor, text: 'Visual Learning', desc: 'Emphasis on visual resources like videos and diagrams' };
+      case 'practical': return { icon: Settings, text: 'Practical Learning', desc: 'Focus on hands-on exercises and practical applications' };
+      case 'theoretical': return { icon: Book, text: 'Theoretical Learning', desc: 'Deep theoretical foundations and academic papers' };
+      case 'balanced': return { icon: Users, text: 'Balanced Learning', desc: 'Mix of theoretical and practical resources' };
+      default: return { icon: Users, text: 'Balanced Learning', desc: 'Mix of theoretical and practical resources' };
     }
   };
 
@@ -116,7 +111,7 @@ export default function SyllabusInput() {
       Difficulty level: ${difficulty.toUpperCase()}
       
       For each week:
-      1. Include a creative, engaging week title that combines the topic with a pop culture reference, pun or metaphor
+      1. Include a creative, engaging week title that combines the topic with a professional academic approach
       2. Include at least one relevant online resource (articles, websites, or video lectures) with a valid URL
       3. Add a weekly challenge/activity that students can complete
       4. Include an inspirational quote related to the topic
@@ -204,297 +199,327 @@ export default function SyllabusInput() {
     setTopics([...randomSet]);
   };
 
+  const difficultyInfo = getDifficultyLevel();
+  const learningStyleInfo = getLearningStyleInfo();
+
   return (
     <>
       <Nav />
-      <div className={`min-h-screen bg-gradient-to-br ${themeColors[theme].bg} flex flex-col items-center justify-center p-6 pt-20`}>
-        <h1 className={`text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r ${themeColors[theme].gradient} mb-2 text-center`}>
-          Craft Your Creative Syllabus
-        </h1>
-        
-        <div className={`text-lg ${themeColors[theme].text} mb-8 text-center max-w-xl`}>
-          <p>Transform your course into an engaging learning journey with a personalized syllabus.</p>
-          <div className="flex items-center justify-center mt-2 space-x-2">
-            <span className="flex items-center text-sm px-2 py-1 rounded-full bg-white">
-              <BookOpen size={14} className="mr-1" /> Personalized
-            </span>
-            <span className="flex items-center text-sm px-2 py-1 rounded-full bg-white">
-              <Calendar size={14} className="mr-1" /> 4-Week Plan
-            </span>
-            <span className="flex items-center text-sm px-2 py-1 rounded-full bg-white">
-              <Globe size={14} className="mr-1" /> Curated Resources
-            </span>
-          </div>
-        </div>
-
-        {error && (
-          <div className="w-full max-w-2xl text-center bg-red-50 p-4 rounded-lg mb-6">
-            <div className="flex items-center justify-center mb-2">
-              <AlertCircle size={20} className="text-red-500 mr-2" />
-              <p className="text-red-500 text-lg">{error}</p>
-            </div>
-            <button
-              onClick={() => navigate('/course-input')}
-              className={`bg-gradient-to-r ${themeColors[theme].gradient} ${themeColors[theme].hover} text-white font-bold py-3 px-6 rounded-lg transition-all duration-300`}
-            >
-              Go to Course Input
-            </button>
-          </div>
-        )}
-
-        {!error && (
-          <div className="w-full max-w-lg">
-            <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-xl p-8 mb-6 border">
-              <form onSubmit={handleSubmit}>
-                <div className="mb-6">
-                  <label
-                    htmlFor="course-select"
-                    className={`block text-sm font-semibold mb-2 flex items-center ${themeColors[theme].text}`}
-                  >
-                    <BookOpen size={16} className="mr-2" /> Select Course
-                  </label>
-                  <select
-                    id="course-select"
-                    value={selectedCourse}
-                    onChange={(e) => setSelectedCourse(e.target.value)}
-                    className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-800 text-white"
-                  >
-                    <option value="">Select a course</option>
-                    {courses.map((course) => (
-                      <option key={course.courseCode} value={course.courseCode}>
-                        {course.courseName} ({course.courseCode})
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className="mb-6">
-                  <div className="flex justify-between items-center mb-2">
-                    <label className={`block text-sm font-semibold flex items-center ${themeColors[theme].text}`}>
-                      <Book size={16} className="mr-2" /> Key Topics
-                    </label>
-                    <button
-                      type="button"
-                      onClick={generateRandomTopics}
-                      className={`text-xs px-2 py-1 rounded bg-gradient-to-r ${themeColors[theme].gradient} ${themeColors[theme].hover} text-white transition-all`}
-                    >
-                      Inspire Me
-                    </button>
-                  </div>
-
-                  {topics.map((topic, index) => (
-                    <div key={index} className="mb-3">
-                      <input
-                        type="text"
-                        value={topic}
-                        onChange={(e) => handleTopicChange(index, e.target.value)}
-                        placeholder={`Topic ${index + 1} (e.g., ${['Quantum Computing', 'Design Thinking', 'Renaissance Art'][index]})`}
-                        className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-800 text-white"
-                      />
-                    </div>
-                  ))}
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div>
-                    <label
-                      htmlFor="learning-style"
-                      className={`block text-sm font-semibold mb-2 ${themeColors[theme].text}`}
-                    >
-                      Learning Style
-                    </label>
-                    <select
-                      id="learning-style"
-                      value={learningStyle}
-                      onChange={(e) => setLearningStyle(e.target.value)}
-                      className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-800 text-white"
-                    >
-                      <option value="balanced">Balanced</option>
-                      <option value="visual">Visual Learner</option>
-                      <option value="practical">Practical</option>
-                      <option value="theoretical">Theoretical</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="difficulty"
-                      className={`block text-sm font-semibold mb-2 ${themeColors[theme].text}`}
-                    >
-                      Difficulty Level
-                    </label>
-                    <select
-                      id="difficulty"
-                      value={difficulty}
-                      onChange={(e) => setDifficulty(e.target.value)}
-                      className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400 bg-gray-800 text-white"
-                    >
-                      <option value="beginner">Beginner</option>
-                      <option value="intermediate">Intermediate</option>
-                      <option value="advanced">Advanced</option>
-                    </select>
-                  </div>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className={`w-full py-3 rounded-lg font-bold text-white transition-all duration-300 ${
-                    loading
-                      ? 'bg-gray-400 cursor-not-allowed'
-                      : `bg-gradient-to-r ${themeColors[theme].gradient} ${themeColors[theme].hover}`
-                  }`}
-                >
-                  {loading ? (
-                    <span className="flex items-center justify-center">
-                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Crafting Your Syllabus...
-                    </span>
-                  ) : (
-                    'Create My Syllabus'
-                  )}
-                </button>
-              </form>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex flex-col items-center justify-center p-6 pt-20">
+        <div className="w-full max-w-4xl">
+          <h1 className="text-4xl font-bold text-blue-900 mb-2 text-center">
+            Syllabus Generator
+          </h1>
+          
+          <div className="text-blue-700 mb-8 text-center max-w-2xl mx-auto">
+            <p className="text-lg mb-4">Create a comprehensive 4-week learning plan tailored to your course and preferences.</p>
+            <div className="flex items-center justify-center flex-wrap gap-2">
+              <span className="flex items-center text-sm px-3 py-1 rounded-full bg-blue-100 text-blue-800">
+                <BookOpen size={14} className="mr-1" /> Personalized Content
+              </span>
+              <span className="flex items-center text-sm px-3 py-1 rounded-full bg-blue-100 text-blue-800">
+                <Calendar size={14} className="mr-1" /> 4-Week Structure
+              </span>
+              <span className="flex items-center text-sm px-3 py-1 rounded-full bg-blue-100 text-blue-800">
+                <Globe size={14} className="mr-1" /> Curated Resources
+              </span>
             </div>
           </div>
-        )}
 
-        {generationComplete && syllabus.length > 0 && (
-          <div className="mt-4 w-full max-w-2xl">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className={`text-2xl font-bold ${themeColors[theme].text}`}>Your Creative Syllabus</h2>
+          {error && (
+            <div className="w-full max-w-2xl mx-auto text-center bg-red-50 border border-red-200 rounded-lg p-6 mb-6">
+              <div className="flex items-center justify-center mb-4">
+                <AlertCircle size={24} className="text-red-500 mr-2" />
+                <p className="text-red-700 text-lg font-medium">{error}</p>
+              </div>
               <button
-                onClick={handleDownloadPDF}
-                className={`flex items-center text-sm px-3 py-2 rounded-lg bg-gradient-to-r ${themeColors[theme].gradient} ${themeColors[theme].hover} text-white transition-all`}
+                onClick={() => navigate('/course-input')}
+                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200"
               >
-                <Download size={16} className="mr-1" /> Export PDF
+                Go to Course Input
               </button>
             </div>
-            
-            <div className="bg-white/10 backdrop-blur-md rounded-lg shadow-lg overflow-hidden border">
-              {selectedCourse && (
-                <div className={`p-4 bg-gradient-to-r ${themeColors[theme].gradient} text-white`}>
-                  <h2 className="text-lg font-semibold">
-                    {courses.find(c => c.courseCode === selectedCourse)?.courseName} ({selectedCourse})
-                  </h2>
-                  <div className="flex items-center mt-2 text-sm">
-                    <div className="flex items-center mr-4">
-                      {getLearningStyleIcon()}
-                      <span className="ml-1">{getLearningStyleDescription()}</span>
-                    </div>
-                    <div className={`px-2 py-1 rounded-full text-xs font-medium ${getDifficultyColor()}`}>
-                      {getDifficultyEmoji()}
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              <div className="p-6">
-                {syllabus.map((entry, index) => (
-                  <div
-                    key={index}
-                    className={`mb-4 p-4 rounded-lg border ${themeColors[theme].border} overflow-hidden`}
-                  >
-                    <div 
-                      className="cursor-pointer"
-                      onClick={() => toggleWeekExpansion(entry.week)}
+          )}
+
+          {!error && (
+            <div className="w-full max-w-2xl mx-auto">
+              <div className="bg-white rounded-lg shadow-md p-8 mb-6">
+                <form onSubmit={handleSubmit}>
+                  {/* Course Selection */}
+                  <div className="mb-6">
+                    <label
+                      htmlFor="course-select"
+                      className="block text-sm font-medium mb-2 flex items-center text-gray-700"
                     >
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-start">
-                          <div className={`h-8 w-8 rounded-full flex items-center justify-center bg-gradient-to-r ${themeColors[theme].gradient} mr-3 text-white`}>
-                            {entry.week}
-                          </div>
-                          <div>
-                            <h3 className={`text-lg font-semibold ${themeColors[theme].text}`}>
-                              {entry.title || `Week ${entry.week}: ${entry.topic}`}
-                            </h3>
-                            <p className={`text-sm ${themeColors[theme].text}`}>{entry.topic}</p>
-                          </div>
+                      <GraduationCap size={16} className="mr-2 text-blue-600" /> Select Course
+                    </label>
+                    <select
+                      id="course-select"
+                      value={selectedCourse}
+                      onChange={(e) => setSelectedCourse(e.target.value)}
+                      className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                    >
+                      <option value="">Choose a course...</option>
+                      {courses.map((course) => (
+                        <option key={course.courseCode} value={course.courseCode}>
+                          {course.courseName} ({course.courseCode})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Topics Section */}
+                  <div className="mb-6">
+                    <div className="flex justify-between items-center mb-3">
+                      <label className="block text-sm font-medium flex items-center text-gray-700">
+                        <Book size={16} className="mr-2 text-blue-600" /> Key Topics
+                      </label>
+                      <button
+                        type="button"
+                        onClick={generateRandomTopics}
+                        className="flex items-center text-sm px-3 py-1 rounded-md bg-blue-100 hover:bg-blue-200 text-blue-700 transition-colors duration-200"
+                      >
+                        <Lightbulb size={14} className="mr-1" />
+                        Get Suggestions
+                      </button>
+                    </div>
+
+                    {topics.map((topic, index) => (
+                      <div key={index} className="mb-3">
+                        <input
+                          type="text"
+                          value={topic}
+                          onChange={(e) => handleTopicChange(index, e.target.value)}
+                          placeholder={`Topic ${index + 1} (e.g., ${['Quantum Computing', 'Design Thinking', 'Renaissance Art'][index]})`}
+                          className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                        />
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Learning Preferences */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                      <label
+                        htmlFor="learning-style"
+                        className="block text-sm font-medium mb-2 text-gray-700 flex items-center"
+                      >
+                        <Users size={16} className="mr-2 text-blue-600" /> Learning Style
+                      </label>
+                      <select
+                        id="learning-style"
+                        value={learningStyle}
+                        onChange={(e) => setLearningStyle(e.target.value)}
+                        className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                      >
+                        <option value="balanced">Balanced Approach</option>
+                        <option value="visual">Visual Learning</option>
+                        <option value="practical">Practical Focus</option>
+                        <option value="theoretical">Theoretical Depth</option>
+                      </select>
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="difficulty"
+                        className="block text-sm font-medium mb-2 text-gray-700 flex items-center"
+                      >
+                        <Target size={16} className="mr-2 text-blue-600" /> Difficulty Level
+                      </label>
+                      <select
+                        id="difficulty"
+                        value={difficulty}
+                        onChange={(e) => setDifficulty(e.target.value)}
+                        className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white text-gray-900"
+                      >
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Current Selections Preview */}
+                  {(learningStyle !== 'balanced' || difficulty !== 'intermediate') && (
+                    <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                      <h3 className="text-sm font-medium text-blue-900 mb-2">Your Preferences:</h3>
+                      <div className="flex flex-wrap gap-2">
+                        <div className="flex items-center text-sm px-2 py-1 bg-blue-100 text-blue-800 rounded">
+                          {React.createElement(learningStyleInfo.icon, { size: 14, className: "mr-1" })}
+                          {learningStyleInfo.text}
                         </div>
-                        <div className={`transform transition-transform ${expandedWeek === entry.week ? 'rotate-180' : ''}`}>
-                          <ChevronDown size={20} className="text-gray-300" />
+                        <div className={`text-sm px-2 py-1 rounded border ${difficultyInfo.color}`}>
+                          {difficultyInfo.text}
                         </div>
                       </div>
                     </div>
-                    
-                    {expandedWeek === entry.week && (
-                      <div className="mt-4 overflow-hidden">
-                        <div className="border-t pt-4 mt-2">
-                          <div className="mb-3">
-                            <h4 className={`text-sm font-semibold mb-1 ${themeColors[theme].text}`}>Readings & Resources</h4>
-                            <p className={`text-sm ${themeColors[theme].text}`}>{entry.readings}</p>
+                  )}
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className={`w-full py-3 rounded-md font-medium text-white transition-colors duration-200 ${
+                      loading
+                        ? 'bg-gray-400 cursor-not-allowed'
+                        : 'bg-blue-600 hover:bg-blue-700'
+                    }`}
+                  >
+                    {loading ? (
+                      <span className="flex items-center justify-center">
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+                        Generating Syllabus...
+                      </span>
+                    ) : (
+                      'Generate Syllabus'
+                    )}
+                  </button>
+                </form>
+              </div>
+            </div>
+          )}
+
+          {/* Generated Syllabus Display */}
+          {generationComplete && syllabus.length > 0 && (
+            <div className="w-full max-w-4xl mx-auto mt-6">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                <h2 className="text-2xl font-bold text-blue-900">Your Custom Syllabus</h2>
+                <button
+                  onClick={handleDownloadPDF}
+                  className="flex items-center text-sm px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white transition-colors duration-200"
+                >
+                  <Download size={16} className="mr-2" /> Export PDF
+                </button>
+              </div>
+              
+              <div className="bg-white rounded-lg shadow-md overflow-hidden">
+                {/* Course Header */}
+                {selectedCourse && (
+                  <div className="p-6 bg-blue-600 text-white">
+                    <h2 className="text-xl font-semibold mb-2">
+                      {courses.find(c => c.courseCode === selectedCourse)?.courseName} ({selectedCourse})
+                    </h2>
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 text-sm">
+                      <div className="flex items-center">
+                        {React.createElement(learningStyleInfo.icon, { size: 16, className: "mr-1" })}
+                        <span>{learningStyleInfo.desc}</span>
+                      </div>
+                      <div className="hidden sm:block text-blue-200">•</div>
+                      <div className={`px-2 py-1 rounded text-xs font-medium ${difficultyInfo.color}`}>
+                        {difficultyInfo.text}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Weekly Content */}
+                <div className="p-6">
+                  {syllabus.map((entry, index) => (
+                    <div
+                      key={index}
+                      className="mb-4 border border-gray-200 rounded-lg overflow-hidden"
+                    >
+                      <div 
+                        className="cursor-pointer p-4 hover:bg-gray-50 transition-colors duration-200"
+                        onClick={() => toggleWeekExpansion(entry.week)}
+                      >
+                        <div className="flex justify-between items-center">
+                          <div className="flex items-center">
+                            <div className="w-8 h-8 rounded-full flex items-center justify-center bg-blue-600 text-white font-medium mr-3">
+                              {entry.week}
+                            </div>
+                            <div>
+                              <h3 className="text-lg font-semibold text-gray-900">
+                                {entry.title || `Week ${entry.week}: ${entry.topic}`}
+                              </h3>
+                              <p className="text-sm text-gray-600">{entry.topic}</p>
+                            </div>
                           </div>
-                          
-                          {entry.links && entry.links.length > 0 && (
-                            <div className="mb-3">
-                              <h4 className={`text-sm font-semibold mb-1 ${themeColors[theme].text}`}>Online Resources</h4>
-                              <ul className="space-y-1">
-                                {entry.links.map((link, linkIndex) => (
-                                  <li 
-                                    key={linkIndex}
-                                    className="flex items-center text-sm"
-                                  >
-                                    <Globe size={14} className={`mr-2 ${themeColors[theme].text}`} />
-                                    <a
-                                      href={link}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className={`${themeColors[theme].text} hover:underline`}
-                                    >
-                                      {link.length > 60 ? link.substring(0, 60) + '...' : link}
-                                    </a>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                          
-                          {entry.challenge && (
-                            <div className="mb-3">
-                              <h4 className={`text-sm font-semibold mb-1 flex items-center ${themeColors[theme].text}`}>
-                                <Award size={14} className="mr-1" /> Weekly Challenge
-                              </h4>
-                              <p className={`text-sm ${themeColors[theme].text}`}>{entry.challenge}</p>
-                            </div>
-                          )}
-                          
-                          {entry.quote && (
-                            <div className={`mt-4 p-3 rounded-lg bg-white/10 backdrop-blur-md italic`}>
-                              <p className={`text-sm ${themeColors[theme].text}`}>"{entry.quote}"</p>
-                              {entry.author && <p className={`text-right text-xs mt-1 ${themeColors[theme].text}`}>— {entry.author}</p>}
-                            </div>
-                          )}
+                          <div className={`transform transition-transform duration-200 ${expandedWeek === entry.week ? 'rotate-180' : ''}`}>
+                            <ChevronDown size={20} className="text-gray-400" />
+                          </div>
                         </div>
                       </div>
-                    )}
-                  </div>
-                ))}
-                
-                <div className="flex mt-6 space-x-4">
-                  <button
-                    onClick={() => navigate('/timetable', { state: { courses } })}
-                    className={`flex-1 bg-gradient-to-r ${themeColors[theme].gradient} ${themeColors[theme].hover} text-white font-bold py-3 rounded-lg transition-all duration-300 flex items-center justify-center`}
-                  >
-                    <Calendar size={18} className="mr-2" /> View Timetable
-                  </button>
+                      
+                      {expandedWeek === entry.week && (
+                        <div className="px-4 pb-4 border-t border-gray-100 bg-gray-50">
+                          <div className="pt-4 space-y-4">
+                            {/* Readings */}
+                            <div>
+                              <h4 className="text-sm font-semibold mb-2 flex items-center text-gray-700">
+                                <BookOpen size={14} className="mr-1 text-blue-600" />
+                                Readings & Resources
+                              </h4>
+                              <p className="text-sm text-gray-600 leading-relaxed">{entry.readings}</p>
+                            </div>
+                            
+                            {/* Online Resources */}
+                            {entry.links && entry.links.length > 0 && (
+                              <div>
+                                <h4 className="text-sm font-semibold mb-2 flex items-center text-gray-700">
+                                  <Globe size={14} className="mr-1 text-blue-600" />
+                                  Online Resources
+                                </h4>
+                                <ul className="space-y-2">
+                                  {entry.links.map((link, linkIndex) => (
+                                    <li key={linkIndex} className="flex items-start">
+                                      <Globe size={14} className="mr-2 mt-0.5 text-blue-500 flex-shrink-0" />
+                                      <a
+                                        href={link}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-sm text-blue-600 hover:text-blue-800 hover:underline break-all"
+                                      >
+                                        {link.length > 60 ? link.substring(0, 60) + '...' : link}
+                                      </a>
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                            
+                            {/* Weekly Challenge */}
+                            {entry.challenge && (
+                              <div>
+                                <h4 className="text-sm font-semibold mb-2 flex items-center text-gray-700">
+                                  <Award size={14} className="mr-1 text-blue-600" />
+                                  Weekly Challenge
+                                </h4>
+                                <p className="text-sm text-gray-600 leading-relaxed">{entry.challenge}</p>
+                              </div>
+                            )}
+                            
+                          
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))}
                   
-                  <button
-                    onClick={() => {
-                      setSyllabus([]);
-                      setGenerationComplete(false);
-                    }}
-                    className={`px-4 py-3 rounded-lg border ${themeColors[theme].border} text-gray-300 hover:bg-gray-800/20 transition-all duration-300`}
-                  >
-                    Start Over
-                  </button>
+                  {/* Action Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-4 mt-8">
+                    <button
+                      onClick={() => navigate('/timetable', { state: { courses } })}
+                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-md transition-colors duration-200 flex items-center justify-center"
+                    >
+                      <Calendar size={18} className="mr-2" />
+                      View Timetable
+                    </button>
+                    
+                    <button
+                      onClick={() => {
+                        setSyllabus([]);
+                        setGenerationComplete(false);
+                      }}
+                      className="px-6 py-3 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors duration-200"
+                    >
+                      Create New Syllabus
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </>
   );

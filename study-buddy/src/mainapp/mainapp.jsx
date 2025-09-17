@@ -1,258 +1,255 @@
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import Nav from './navbar.jsx';
+import { 
+  Book, 
+  Calendar, 
+  FileText, 
+  Puzzle, 
+  StickyNote, 
+  GraduationCap, 
+  Clock, 
+  Target,
+  ArrowRight,
+  CheckCircle
+} from 'lucide-react';
 
 export default function MainApp() {
   const navigate = useNavigate();
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
-  
-  // Motivational quotes for students
+
+  // Professional quotes for students
   const quotes = [
     "The expert in anything was once a beginner. — Helen Hayes",
     "Education is not the filling of a pot but the lighting of a fire. — W.B. Yeats",
     "The beautiful thing about learning is that no one can take it away from you. — B.B. King",
     "Success is the sum of small efforts, repeated day in and day out. — Robert Collier"
   ];
-  
+
   useEffect(() => {
     // Change quote every 5 seconds
     const quoteInterval = setInterval(() => {
       setCurrentQuoteIndex((prev) => (prev + 1) % quotes.length);
     }, 5000);
-    
+
     return () => clearInterval(quoteInterval);
   }, []);
-  
-  // Animation variants
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      }
-    }
-  };
-  
-  const cardVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { 
-      opacity: 1, 
-      y: 0, 
-      transition: { duration: 0.5, ease: "easeOut" } 
-    },
-    hover: { 
-      scale: 1.03, 
-      transition: { duration: 0.3 } 
-    }
-  };
-  
-  const textVariants = {
-    hidden: { opacity: 0, y: -20 },
-    visible: { 
-      opacity: 1, 
-      y: 0, 
-      transition: { duration: 0.8, ease: "easeOut" } 
-    }
-  };
-  
+
   const features = [
     {
       title: "Course Input",
-      description: "Easily add your courses with details like name, code, and credits to kickstart your study plan.",
-      tagline: "Structure your semester efficiently!",
-      color: "blue",
+      description: "Add your courses with details like name, code, and credits to build your academic foundation.",
+      tagline: "Organize your semester efficiently",
       path: "/course-input",
-      icon: "📝"
+      icon: <FileText size={24} />,
+      primary: true
     },
     {
-      title: "Timetable",
-      description: "Visualize your personalized study schedule tailored to your courses and learning pace.",
-      tagline: "Master time management!",
-      color: "purple",
+      title: "Timetable Generator",
+      description: "Create personalized study schedules tailored to your courses and learning preferences.",
+      tagline: "Master time management",
       path: "/timetable",
-      icon: "⏰"
+      icon: <Calendar size={24} />
     },
     {
-      title: "Syllabus",
-      description: "Generate detailed syllabi to break down your courses into manageable study units.",
-      tagline: "Stay ahead of your coursework!",
-      color: "pink",
+      title: "Syllabus Builder",
+      description: "Generate detailed syllabi to break down courses into manageable study units.",
+      tagline: "Stay ahead of coursework",
       path: "/syllabus",
-      icon: "📚"
+      icon: <Book size={24} />
     },
     {
-      title: "TQ Solver",
-      description: "Tackle tutorial questions with step-by-step guidance and interactive tools.",
-      tagline: "Boost problem-solving skills!",
-      color: "green",
+      title: "Tutorial Solver",
+      description: "Get step-by-step guidance for tutorial questions and problem-solving.",
+      tagline: "Boost problem-solving skills",
       path: "/tqsolver",
-      icon: "🧩"
+      icon: <Puzzle size={24} />
     },
     {
       title: "Note Generator",
-      description: "Create concise, organized notes from your study materials to enhance retention.",
-      tagline: "Simplify your learning process!",
-      color: "yellow",
+      description: "Create organized, concise notes from your study materials to enhance retention.",
+      tagline: "Simplify your learning process",
       path: "/notegenerator",
-      icon: "🗒️"
+      icon: <StickyNote size={24} />
     }
   ];
 
   const steps = [
-    "Start by adding your courses to create a foundation",
-    "Generate a timetable to organize your study sessions",
-    "Build syllabi for a clear roadmap of each course",
-    "Use TQ Solver to master challenging concepts",
-    "create comprehensive notes to aid in reading"
+    "Add your courses to create a structured foundation",
+    "Generate a personalized timetable for organized study sessions",
+    "Build comprehensive syllabi for clear course roadmaps",
+    "Use Tutorial Solver to master challenging concepts",
+    "Create effective notes to support your learning"
+  ];
+
+  const stats = [
+    { icon: <GraduationCap size={24} />, value: "5", label: "Study Tools" },
+    { icon: <Clock size={24} />, value: "24/7", label: "Available" },
+    { icon: <Target size={24} />, value: "100%", label: "Personalized" }
   ];
 
   return (
     <>
       <Nav />
-      <div className="flex flex-col min-h-screen mt-15 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
-        <div className="flex-1 flex flex-col items-center justify-center p-8">
-          {/* Animated Title Section */}
-          <motion.div 
-            className="text-center mb-12"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1 }}
-          >
-            <motion.h1
-              variants={textVariants}
-              initial="hidden"
-              animate="visible"
-              className="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-700 via-purple-600 to-pink-600 mb-6"
-            >
+      <div className="flex flex-col min-h-screen bg-gradient-to-br from-blue-50 to-blue-100">
+        <div className="flex-1 flex flex-col items-center justify-center p-8 pt-24">
+          {/* Hero Section */}
+          <div className="text-center mb-12 max-w-4xl">
+            <h1 className="text-4xl md:text-6xl font-bold text-blue-900 mb-6">
               Study Buddy
-            </motion.h1>
-            
-            <motion.h2
-              variants={textVariants}
-              initial="hidden"
-              animate="visible"
-              transition={{ delay: 0.2 }}
-              className="text-2xl font-bold text-gray-800 mb-4"
-            >
-              Your Academic Success Partner
-            </motion.h2>
-            
-            <motion.p
-              variants={textVariants}
-              initial="hidden"
-              animate="visible"
-              transition={{ delay: 0.3 }}
-              className="text-lg text-gray-700 max-w-2xl mx-auto"
-            >
-              Unlock your potential with personalized study tools designed to organize your courses, 
-              optimize your time, and master your subjects.
-            </motion.p>
-          </motion.div>
-          
-          {/* Motivational Quote */}
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentQuoteIndex}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.5 }}
-              className="bg-white rounded-lg px-6 py-3 shadow-md mb-12 max-w-2xl"
-            >
-              <p className="text-gray-700 italic text-center">"{quotes[currentQuoteIndex]}"</p>
-            </motion.div>
-          </AnimatePresence>
+            </h1>
 
-          {/* Feature Cards */}
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 w-full max-w-6xl mb-12"
-          >
-            {features.map((feature, index) => (
-              <motion.div
-                key={index}
-                variants={cardVariants}
-                whileHover="hover"
-                onClick={() => navigate(feature.path)}
-                className={`bg-white rounded-2xl shadow-lg p-6 cursor-pointer border-l-4 border-${feature.color}-500 hover:shadow-xl transition-shadow duration-300`}
-              >
-                <div className="flex items-center mb-4">
-                  <span className="text-3xl mr-3">{feature.icon}</span>
-                  <h2 className={`text-2xl font-bold text-${feature.color}-600`}>{feature.title}</h2>
+            <h2 className="text-xl md:text-2xl font-semibold text-blue-800 mb-6">
+              Your Complete Academic Management Platform
+            </h2>
+
+            <p className="text-lg text-blue-700 max-w-3xl mx-auto leading-relaxed">
+              Streamline your academic journey with comprehensive tools for course organization, 
+              schedule management, and effective study planning.
+            </p>
+          </div>
+
+          {/* Stats Row */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 w-full max-w-2xl">
+            {stats.map((stat, index) => (
+              <div key={index} className="bg-white rounded-lg shadow-md p-4 text-center">
+                <div className="text-blue-600 mb-2 flex justify-center">
+                  {stat.icon}
                 </div>
-                
-                <p className="text-gray-600 mb-4">
-                  {feature.description}
-                </p>
-                
-                <div className={`text-sm text-${feature.color}-500 font-semibold flex items-center justify-between`}>
-                  <span>Why? {feature.tagline}</span>
-                  <span className="text-xl">→</span>
-                </div>
-              </motion.div>
+                <div className="text-2xl font-bold text-blue-900">{stat.value}</div>
+                <div className="text-sm text-blue-600">{stat.label}</div>
+              </div>
             ))}
-          </motion.div>
-          
-          {/* Learning Path */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5, duration: 0.5 }}
-            className="bg-white rounded-2xl shadow-lg p-8 max-w-3xl w-full"
-          >
-            <div className="flex items-center mb-6">
-              <span className="text-3xl mr-3">💡</span>
-              <h2 className="text-2xl font-bold text-indigo-600">Your Learning Path</h2>
-            </div>
+          </div>
+
+          {/* Motivational Quote */}
+          <div className="bg-white rounded-lg shadow-md px-8 py-4 mb-12 max-w-3xl border-l-4 border-blue-500">
+            <p className="text-blue-800 italic text-center text-lg">"{quotes[currentQuoteIndex]}"</p>
+          </div>
+
+          {/* Feature Grid */}
+          <div className="w-full max-w-6xl mb-12">
+            <h3 className="text-2xl font-bold text-blue-900 text-center mb-8">
+              Comprehensive Study Tools
+            </h3>
             
-            <ol className="relative border-l border-indigo-200 ml-3 pl-8 space-y-6 mb-6">
-              {steps.map((step, index) => (
-                <motion.li 
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {features.map((feature, index) => (
+                <div
                   key={index}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ 
-                    opacity: 1, 
-                    x: 0,
-                    transition: { delay: 0.6 + (index * 0.1) } 
-                  }}
-                  className="relative"
+                  onClick={() => navigate(feature.path)}
+                  className={`bg-white rounded-lg shadow-md p-6 cursor-pointer border hover:shadow-lg transition-all duration-200 hover:border-blue-300 ${
+                    feature.primary ? 'border-blue-500 ring-2 ring-blue-100' : 'border-gray-200'
+                  }`}
                 >
-                  <div className="absolute -left-12 mt-1 flex items-center justify-center w-6 h-6 bg-indigo-100 rounded-full">
-                    <span className="text-indigo-600 font-semibold text-sm">{index + 1}</span>
+                  <div className="flex items-center mb-4">
+                    <div className={`p-2 rounded-lg mr-3 ${
+                      feature.primary ? 'bg-blue-600 text-white' : 'bg-blue-100 text-blue-600'
+                    }`}>
+                      {feature.icon}
+                    </div>
+                    <h3 className="text-lg font-semibold text-blue-900">{feature.title}</h3>
                   </div>
-                  <p className="text-gray-600">{step}.</p>
-                </motion.li>
+
+                  <p className="text-gray-700 mb-4 text-sm leading-relaxed">
+                    {feature.description}
+                  </p>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-blue-600 font-medium">{feature.tagline}</span>
+                    <ArrowRight size={16} className="text-blue-500" />
+                  </div>
+                </div>
               ))}
-            </ol>
-            
-            <div className="bg-indigo-50 rounded-lg p-4 border border-indigo-100">
-              <p className="text-indigo-700 font-medium flex items-center">
-                <span className="mr-2">💡</span>
-                Pro Tip: Consistency is key to academic success! Dedicate just 25 minutes daily to each subject.
-              </p>
             </div>
-          </motion.div>
-          
-          {/* Get Started Button */}
-          <motion.button
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ 
-              opacity: 1, 
-              y: 0,
-              transition: { delay: 0.8, duration: 0.5 } 
-            }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => navigate('/course-input')}
-            className="mt-10 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-full shadow-lg"
-          >
-            Get Started Now
-          </motion.button>
+          </div>
+
+          {/* Learning Path Section */}
+          <div className="bg-white rounded-lg shadow-md p-8 max-w-4xl w-full mb-8">
+            <div className="flex items-center mb-8">
+              <div className="p-2 bg-blue-100 rounded-lg mr-3">
+                <Book size={28} className="text-blue-600" />
+              </div>
+              <h2 className="text-2xl font-bold text-blue-900">Your Learning Journey</h2>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Steps */}
+              <div>
+                <h3 className="text-lg font-semibold text-blue-800 mb-4">Step-by-Step Process</h3>
+                <div className="space-y-4">
+                  {steps.map((step, index) => (
+                    <div key={index} className="flex items-start">
+                      <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm font-semibold mr-3">
+                        {index + 1}
+                      </div>
+                      <p className="text-gray-700 text-sm leading-relaxed pt-1">{step}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Tips */}
+              <div>
+                <h3 className="text-lg font-semibold text-blue-800 mb-4">Success Tips</h3>
+                <div className="space-y-4">
+                  <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                    <div className="flex items-center mb-2">
+                      <CheckCircle size={20} className="text-blue-600 mr-2" />
+                      <span className="font-medium text-blue-900">Consistency</span>
+                    </div>
+                    <p className="text-sm text-blue-700">
+                      Dedicate 25-30 minutes daily to each subject for optimal retention.
+                    </p>
+                  </div>
+                  
+                  <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+                    <div className="flex items-center mb-2">
+                      <Target size={20} className="text-green-600 mr-2" />
+                      <span className="font-medium text-green-900">Organization</span>
+                    </div>
+                    <p className="text-sm text-green-700">
+                      Keep your courses and schedules organized for maximum productivity.
+                    </p>
+                  </div>
+
+                  <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
+                    <div className="flex items-center mb-2">
+                      <Clock size={20} className="text-purple-600 mr-2" />
+                      <span className="font-medium text-purple-900">Time Management</span>
+                    </div>
+                    <p className="text-sm text-purple-700">
+                      Use the timetable feature to balance study time across all subjects.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Call to Action */}
+          <div className="text-center">
+            <button
+              onClick={() => navigate('/course-input')}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-4 rounded-lg shadow-md transition-colors duration-200 flex items-center mx-auto"
+            >
+              <GraduationCap size={20} className="mr-2" />
+              Start Your Academic Journey
+            </button>
+            <p className="text-sm text-blue-600 mt-3">
+              Begin by adding your courses to unlock all features
+            </p>
+          </div>
         </div>
+
+        {/* Footer */}
+        <footer className="bg-white border-t border-blue-200 py-6 mt-12">
+          <div className="max-w-6xl mx-auto px-8 text-center">
+            <p className="text-blue-600 text-sm">
+              Study Buddy - Empowering students with intelligent academic management tools
+            </p>
+          </div>
+        </footer>
       </div>
     </>
   );

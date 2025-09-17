@@ -1,8 +1,28 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  BookOpen, 
+  Code, 
+  Calculator, 
+  Settings, 
+  Microscope, 
+  FlaskConical, 
+  Atom, 
+  Palette, 
+  Scroll, 
+  MessageCircle, 
+  Music, 
+  Brain, 
+  TrendingUp, 
+  Trash2, 
+  Clock, 
+  FileText,
+  AlertCircle,
+  CheckCircle,
+  Plus,
+  BarChart3
+} from 'lucide-react';
 import Nav from './navbar.jsx';
-import { useTheme } from '../themecontext.jsx';
 
 export default function CourseInput() {
   const [courseName, setCourseName] = useState(() => {
@@ -11,10 +31,10 @@ export default function CourseInput() {
   });
   const [courseCode, setCourseCode] = useState('');
   const [unit, setUnit] = useState('');
-  const [courses, setCourses] = useState(() => {
-    const savedCourses = localStorage.getItem('courses');
-    return savedCourses ? JSON.parse(savedCourses) : [];
-  });
+const [courses, setCourses] = useState(() => {
+  const savedCourses = localStorage.getItem('courses');
+  return savedCourses ? JSON.parse(savedCourses) : [];
+});
 
   useEffect(() => {
     localStorage.setItem('courseName', JSON.stringify(courseName));
@@ -23,101 +43,37 @@ export default function CourseInput() {
   useEffect(() => {
     localStorage.setItem('courses', JSON.stringify(courses));
   }, [courses]);
+
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  
-  const [showConfetti, setShowConfetti] = useState(false);
   const navigate = useNavigate();
 
-   useEffect(() => {
-      localStorage.setItem('courseName', JSON.stringify(courseName));
-    }, [courseName]);
-
-    useEffect(() => {
-      localStorage.setItem('courses', JSON.stringify(courses));
-    }, [courses]);
-  
-  // Course themes with colors
-  
-const {changeTheme} = useTheme()
-const {theme} = useTheme()
-const {themeColors} = useTheme()
-  // Fun emoji mappings for different types of courses
-  const courseEmojis = {
-    'cs': '💻',
-    'math': '🧮',
-    'eng': '🔧',
-    'bio': '🧬',
-    'chem': '🧪',
-    'phys': '⚛️',
-    'art': '🎨',
-    'hist': '📜',
-    'lang': '🗣️',
-    'music': '🎵',
-    'psych': '🧠',
-    'econ': '📊',
-    'default': '📚'
+  // Course icon mappings for different types of courses
+  const courseIcons = {
+    'cs': Code,
+    'math': Calculator,
+    'eng': Settings,
+    'bio': Microscope,
+    'chem': FlaskConical,
+    'phys': Atom,
+    'art': Palette,
+    'hist': Scroll,
+    'lang': MessageCircle,
+    'music': Music,
+    'psych': Brain,
+    'econ': TrendingUp,
+    'default': BookOpen
   };
 
-  // Random motivational quotes
-  const quotes = [
-    "Study hard what interests you the most in the most undisciplined way possible.",
-    "Learning is not attained by chance, it must be sought for with ardor and diligence.",
-    "The beautiful thing about learning is that no one can take it away from you.",
-    "The expert in anything was once a beginner.",
-    "Education is not the filling of a pail, but the lighting of a fire.",
-    "Education is the most powerful weapon which you can use to change the world.",
-    "The more that you read, the more things you will know. The more that you learn, the more places you'll go."
-  ];
-
-  const [quote, setQuote] = useState('');
-
-  useEffect(() => {
-    // Set random quote on mount
-    const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
-    setQuote(randomQuote);
-  }, []);
-
-  // Animation variants
-  const inputVariants = {
-    focus: { scale: 1.02, borderColor: '#3B82F6', boxShadow: '0 0 0 2px rgba(59, 130, 246, 0.3)', transition: { duration: 0.2 } },
-    blur: { scale: 1, borderColor: '#D1D5DB', boxShadow: 'none', transition: { duration: 0.2 } },
-  };
-
-  const cardVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } },
-  };
-
-  const errorVariants = {
-    hidden: { opacity: 0, y: -20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
-  };
-
-  const successVariants = {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: { opacity: 1, scale: 1, transition: { duration: 0.4, type: 'spring', stiffness: 200 } },
-  };
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { 
-      opacity: 1,
-      transition: { 
-        staggerChildren: 0.1
+  const getIcon = (code) => {
+    const lowerCode = code.toLowerCase();
+    // Check if code starts with any of the keys in courseIcons
+    for (const prefix in courseIcons) {
+      if (lowerCode.startsWith(prefix)) {
+        return courseIcons[prefix];
       }
     }
-  };
-
-  const getEmoji = (code) => {
-    code = code.toLowerCase();
-    // Check if code starts with any of the keys in courseEmojis
-    for (const prefix in courseEmojis) {
-      if (code.startsWith(prefix)) {
-        return courseEmojis[prefix];
-      }
-    }
-    return courseEmojis.default;
+    return courseIcons.default;
   };
 
   const handleSubmit = (event) => {
@@ -139,341 +95,302 @@ const {themeColors} = useTheme()
       return;
     }
 
+    // Check for duplicate course codes
+    if (courses.some(course => course.courseCode.toLowerCase() === courseCode.trim().toLowerCase())) {
+      setError('Course code already exists');
+      return;
+    }
+
     const newCourse = { 
-      courseName: courseName.trim(), 
-      courseCode: courseCode.trim(), 
-      unit: parseInt(unit),
-      emoji: getEmoji(courseCode.trim())
-    };
-    
+  courseName: courseName.trim(), 
+  courseCode: courseCode.trim(), 
+  unit: parseInt(unit),
+  iconKey: getIconKey(courseCode.trim()) // Store just the key, not the component
+};
+
+
+
+const getIconKey = (code) => {
+  const lowerCode = code.toLowerCase();
+  for (const prefix in courseIcons) {
+    if (lowerCode.startsWith(prefix)) {
+      return prefix;
+    }
+  }
+  return 'default';
+};
+
+
     setCourses([...courses, newCourse]);
     setCourseName('');
     setCourseCode('');
     setUnit('');
     
     // Show success message
-    setSuccess(`${newCourse.emoji} ${newCourse.courseName} added successfully!`);
+    setSuccess(`${newCourse.courseName} added successfully!`);
     
     // Clear success message after 3 seconds
     setTimeout(() => {
       setSuccess('');
     }, 3000);
-
-    // Show confetti when adding 3rd course
-    if (courses.length === 2) {
-      setShowConfetti(true);
-      setTimeout(() => setShowConfetti(false), 3000);
-    }
   };
 
   const handleDelete = (index) => {
     setCourses(courses.filter((_, i) => i !== index));
   };
 
-
- 
   const totalUnits = courses.reduce((sum, course) => sum + course.unit, 0);
   const unitPercent = Math.min(totalUnits / 18 * 100, 100); // Assuming 18 is max units
 
   return (
     <>
       <Nav />
-      <div className={`min-h-screen bg-gradient-to-br ${themeColors[theme].bg} flex flex-col mt-15 items-center justify-center p-6 transition-colors duration-700`}>
-        {showConfetti && (
-          <div className="fixed inset-0 pointer-events-none z-50">
-            {[...Array(50)].map((_, i) => {
-              const size = Math.random() * 10 + 5;
-              const color = ['#FF6B6B', '#4ECDC4', '#FFE66D', '#1A535C', '#FF9F1C'][Math.floor(Math.random() * 5)];
-              const left = Math.random() * 100;
-              const animDuration = Math.random() * 3 + 2;
-              const delay = Math.random() * 0.5;
-              
-              return (
-                <motion.div 
-                  key={i}
-                  className="absolute rounded-full"
-                  style={{ 
-                    width: size, 
-                    height: size, 
-                    backgroundColor: color,
-                    left: `${left}%`,
-                    top: '-10px',
-                  }}
-                  initial={{ y: -20, opacity: 1 }}
-                  animate={{ 
-                    y: window.innerHeight + 20,
-                    opacity: [1, 1, 0],
-                    rotate: Math.random() * 360
-                  }}
-                  transition={{ 
-                    duration: animDuration, 
-                    delay: delay,
-                    ease: [0.1, 0.4, 0.8, 1]
-                  }}
-                />
-              );
-            })}
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 flex flex-col items-center justify-center p-6 pt-20">
+        <div className="w-full max-w-4xl">
+          <div className="mb-8 text-center">
+            <h1 className="text-4xl font-bold text-blue-900 mb-4">
+              Course Management
+            </h1>
+            <p className="text-lg text-blue-700 mb-2 max-w-2xl mx-auto">
+              Add your courses to create a personalized study schedule and syllabus.
+            </p>
+            <p className="text-sm text-blue-600">
+              Build your academic foundation with organized course planning.
+            </p>
           </div>
-        )}
-        
-        <motion.div
-          className="mb-8 text-center"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: 'easeOut' }}
-        >
-          <motion.h1
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, ease: 'easeOut' }}
-            className={`text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r ${themeColors[theme].gradient} mb-4 text-center`}
-          >
-            Build Your Study Plan
-          </motion.h1>
-          <p className="text-lg text-gray-700 mb-2 text-center max-w-xl">
-            Add your courses to create a personalized study schedule.
-          </p>
-          <p className="text-sm italic text-gray-500 mb-4">"{quote}"</p>
-          
-          <motion.button
-            onClick={changeTheme}
-            whileHover={{ scale: 1.2 }}
-            whileTap={{ scale: 0.9 }}
-            className={`w-10 h-10 rounded-full flex items-center justify-center text-xl bg-gradient-to-r ${themeColors[theme].gradient} text-white ${themeColors[theme].hover}`}
-          >
-            🎨
-          </motion.button>
-        </motion.div>
 
-        <div className="w-full max-w-lg">
-          <motion.div 
-            className="bg-white rounded-2xl shadow-xl p-8 mb-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <form onSubmit={handleSubmit}>
-              <div className="mb-6">
-                <label htmlFor="course-name" className="block text-gray-800 text-sm font-semibold mb-2">
-                  Course Name
-                </label>
-                <motion.input
-                  type="text"
-                  id="course-name"
-                  value={courseName}
-                  onChange={(e) => setCourseName(e.target.value)}
-                  placeholder="e.g., Introduction to Programming"
-                  className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  variants={inputVariants}
-                  whileFocus="focus"
-                  initial="blur"
-                />
-              </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Course Input Form */}
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+                <Plus className="w-5 h-5 mr-2 text-blue-600" />
+                Add New Course
+              </h2>
 
-              <div className="mb-6">
-                <label htmlFor="course-code" className="block text-gray-800 text-sm font-semibold mb-2">
-                  Course Code
-                </label>
-                <motion.input
-                  type="text"
-                  id="course-code"
-                  value={courseCode}
-                  onChange={(e) => setCourseCode(e.target.value)}
-                  placeholder="e.g., CS101"
-                  className="w-full px-4 py-3 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  variants={inputVariants}
-                  whileFocus="focus"
-                  initial="blur"
-                />
-              </div>
-
-              <div className="mb-6">
-                <label htmlFor="unit" className="block text-gray-800 text-sm font-semibold mb-2">
-                  Units
-                </label>
-                <motion.div className="flex items-center">
-                  <motion.input
-                    type="range"
-                    id="unit-range"
-                    min="1"
-                    max="6"
-                    value={unit || 1}
-                    onChange={(e) => setUnit(e.target.value)}
-                    className="w-full mr-4"
+              <form onSubmit={handleSubmit}>
+                <div className="mb-4">
+                  <label htmlFor="course-name" className="block text-gray-700 text-sm font-medium mb-2">
+                    Course Name
+                  </label>
+                  <input
+                    type="text"
+                    id="course-name"
+                    value={courseName}
+                    onChange={(e) => setCourseName(e.target.value)}
+                    placeholder="e.g., Introduction to Programming"
+                    className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                   />
-                  <motion.input
-                    type="number"
-                    id="unit"
-                    value={unit}
-                    onChange={(e) => setUnit(e.target.value)}
-                    placeholder="e.g., 3"
-                    min="1"
-                    max="6"
-                    className="w-16 px-3 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-400 text-center"
-                    variants={inputVariants}
-                    whileFocus="focus"
-                    initial="blur"
-                  />
-                </motion.div>
-              </div>
+                </div>
 
-              <AnimatePresence>
+                <div className="mb-4">
+                  <label htmlFor="course-code" className="block text-gray-700 text-sm font-medium mb-2">
+                    Course Code
+                  </label>
+                  <input
+                    type="text"
+                    id="course-code"
+                    value={courseCode}
+                    onChange={(e) => setCourseCode(e.target.value)}
+                    placeholder="e.g., CS101"
+                    className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  />
+                </div>
+
+                <div className="mb-6">
+                  <label htmlFor="unit" className="block text-gray-700 text-sm font-medium mb-2">
+                    Units (Credit Hours)
+                  </label>
+                  <div className="flex items-center space-x-4">
+                    <input
+                      type="range"
+                      id="unit-range"
+                      min="1"
+                      max="6"
+                      value={unit || 1}
+                      onChange={(e) => setUnit(e.target.value)}
+                      className="flex-1 h-2 bg-blue-200 rounded-lg appearance-none cursor-pointer slider"
+                    />
+                    <input
+                      type="number"
+                      id="unit"
+                      value={unit}
+                      onChange={(e) => setUnit(e.target.value)}
+                      placeholder="3"
+                      min="1"
+                      max="6"
+                      className="w-16 px-3 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Select between 1-6 credit hours</p>
+                </div>
+
+                {/* Error Message */}
                 {error && (
-                  <motion.p
-                    variants={errorVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="hidden"
-                    className="text-red-500 text-sm mb-4 bg-red-50 p-3 rounded-lg"
-                  >
-                    {error}
-                  </motion.p>
+                  <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md flex items-center">
+                    <AlertCircle className="w-4 h-4 text-red-500 mr-2 flex-shrink-0" />
+                    <p className="text-red-700 text-sm">{error}</p>
+                  </div>
                 )}
-              </AnimatePresence>
 
-              <AnimatePresence>
+                {/* Success Message */}
                 {success && (
-                  <motion.p
-                    variants={successVariants}
-                    initial="hidden"
-                    animate="visible"
-                    exit="hidden"
-                    className="text-green-500 text-sm mb-4 bg-green-50 p-3 rounded-lg"
-                  >
-                    {success}
-                  </motion.p>
+                  <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-md flex items-center">
+                    <CheckCircle className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
+                    <p className="text-green-700 text-sm">{success}</p>
+                  </div>
                 )}
-              </AnimatePresence>
 
-              <motion.button
-                type="submit"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className={`w-full bg-gradient-to-r ${themeColors[theme].gradient} text-white font-bold py-3 rounded-lg ${themeColors[theme].hover} transition-all duration-300`}
-              >
-                Add Course
-              </motion.button>
-            </form>
-          </motion.div>
-          
-          {courses.length > 0 && (
-            <motion.div 
-              className="mb-8 bg-white rounded-2xl shadow-xl p-6"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-gray-800">Your Courses ({courses.length})</h2>
-                <span className={`text-sm ${courses.length < 3 ? 'text-amber-600' : 'text-green-600'}`}>
-                  {courses.length < 3 ? `Add ${3 - courses.length} more to proceed` : 'Ready to go!'}
-                </span>
+                <button
+                  type="submit"
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 rounded-md transition-colors duration-200"
+                >
+                  Add Course
+                </button>
+              </form>
+            </div>
+
+            {/* Course List */}
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-semibold text-gray-900 flex items-center">
+                  <BookOpen className="w-5 h-5 mr-2 text-blue-600" />
+                  Your Courses ({courses.length})
+                </h2>
+                {courses.length > 0 && (
+                  <span className={`text-sm px-2 py-1 rounded-full ${courses.length < 3 ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'}`}>
+                    {courses.length < 3 ? `${3 - courses.length} more needed` : 'Ready to proceed'}
+                  </span>
+                )}
               </div>
               
-              <div className="mb-4">
-                <div className="h-2 bg-gray-200 rounded-full">
-                  <motion.div 
-                    className={`h-2 rounded-full bg-gradient-to-r ${themeColors[theme].gradient}`}
-                    initial={{ width: 0 }}
-                    animate={{ width: `${unitPercent}%` }}
-                    transition={{ duration: 0.5 }}
-                  />
+              {/* Units Progress Bar */}
+              {courses.length > 0 && (
+                <div className="mb-6">
+                  <div className="flex justify-between text-sm text-gray-600 mb-1">
+                    <span>Total Units: {totalUnits}</span>
+                    <span>Target: 18 units</span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+                      style={{ width: `${unitPercent}%` }}
+                    ></div>
+                  </div>
                 </div>
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
-                  <span>0 units</span>
-                  <span>Total: {totalUnits} units</span>
-                  <span>18 units</span>
-                </div>
-              </div>
+              )}
               
-              <motion.div 
-                className="grid gap-4"
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-              >
-                <AnimatePresence>
-                  {courses.map((course, index) => (
-                    <motion.div
-                      key={index}
-                      variants={cardVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="hidden"
-                      className={`bg-white rounded-lg shadow-md p-6 flex justify-between items-center border-l-4 ${themeColors[theme].border} hover:shadow-lg transition-shadow duration-300`}
-                      whileHover={{ y: -5, transition: { duration: 0.2 } }}
-                    >
-                      <div className="flex items-center">
-                        <span className="text-2xl mr-3">{course.emoji}</span>
-                        <div>
-                          <p className={`text-lg font-semibold ${themeColors[theme].text}`}>{course.courseName}</p>
-                          <p className="text-gray-600">Code: {course.courseCode}</p>
-                          <div className="flex items-center mt-1">
-                            <p className="text-gray-600 mr-2">Units: {course.unit}</p>
-                            <div className="flex">
-                              {[...Array(course.unit)].map((_, i) => (
-                                <motion.div 
-                                  key={i}
-                                  className={`w-2 h-2 rounded-full ${themeColors[theme].text} mr-1`}
-                                  initial={{ scale: 0 }}
-                                  animate={{ scale: 1 }}
-                                  transition={{ delay: i * 0.1 }}
-                                />
-                              ))}
+              {/* Course Cards */}
+              {courses.length > 0 ? (
+                <div className="space-y-3 max-h-80 overflow-y-auto">
+               {courses.map((course, index) => {
+  const IconComponent = courseIcons[course.iconKey] || courseIcons.default;
+  return (
+    <div key={index} className="bg-gray-50 rounded-lg p-4 border border-gray-200 hover:border-blue-300 transition-colors duration-200">
+      <div className="flex justify-between items-start">
+        <div className="flex items-start space-x-3">
+          <div className="p-2 bg-blue-100 rounded-lg">
+            <IconComponent className="w-5 h-5 text-blue-600" />
+          </div>
+                            <div className="flex-1">
+                              <h3 className="font-medium text-gray-900">{course.courseName}</h3>
+                              <p className="text-sm text-gray-600 mb-1">Code: {course.courseCode}</p>
+                              <div className="flex items-center">
+                                <BarChart3 className="w-4 h-4 text-blue-500 mr-1" />
+                                <span className="text-sm text-gray-600">{course.unit} units</span>
+                                <div className="flex ml-2">
+                                  {[...Array(course.unit)].map((_, i) => (
+                                    <div key={i} className="w-2 h-2 bg-blue-500 rounded-full mr-1" />
+                                  ))}
+                                </div>
+                              </div>
                             </div>
                           </div>
+                          <button
+                            onClick={() => handleDelete(index)}
+                            className="p-2 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-md transition-colors duration-200"
+                            title="Delete course"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
                       </div>
-                      <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        onClick={() => handleDelete(index)}
-                        className="text-red-500 hover:text-red-700 bg-red-50 p-2 rounded-full"
-                      >
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                        </svg>
-                      </motion.button>
-                    </motion.div>
-                  ))}
-                </AnimatePresence>
-              </motion.div>
-              
-              {courses.length >= 3 && (
-                <motion.div 
-                  className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4, duration: 0.5 }}
-                >
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => navigate('/timetable', { state: { courses } })}
-                    className={`w-full bg-gradient-to-r ${themeColors[theme].gradient} text-white font-bold py-3 rounded-lg ${themeColors[theme].hover} transition-all duration-300 flex items-center justify-center`}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                    </svg>
-                    Go to Timetable
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => navigate('/syllabus', { state: { courses } })}
-                    className={`w-full bg-gradient-to-r ${themeColors[theme].gradient} text-white font-bold py-3 rounded-lg ${themeColors[theme].hover} transition-all duration-300 flex items-center justify-center`}
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                      <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z" />
-                    </svg>
-                    Go to Syllabus
-                  </motion.button>
-                </motion.div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <BookOpen className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-600 mb-2">No courses added yet</p>
+                  <p className="text-sm text-gray-500">Add at least 3 courses to proceed to timetable and syllabus generation.</p>
+                </div>
               )}
-            </motion.div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          {courses.length >= 3 && (
+            <div className="mt-8 bg-white rounded-lg shadow-md p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Next Steps</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <button
+                  onClick={() => navigate('/timetable', { state: { courses } })}
+                  className="flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md transition-colors duration-200"
+                >
+                  <Clock className="w-5 h-5 mr-2" />
+                  Generate Timetable
+                </button>
+                <button
+                  onClick={() => navigate('/syllabus', { state: { courses } })}
+                  className="flex items-center justify-center bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-md transition-colors duration-200"
+                >
+                  <FileText className="w-5 h-5 mr-2" />
+                  Create Syllabus
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Course Statistics */}
+          {courses.length > 0 && (
+            <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="bg-white rounded-lg shadow-md p-4 text-center">
+                <BookOpen className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+                <p className="text-2xl font-bold text-gray-900">{courses.length}</p>
+                <p className="text-sm text-gray-600">Total Courses</p>
+              </div>
+              <div className="bg-white rounded-lg shadow-md p-4 text-center">
+                <BarChart3 className="w-8 h-8 text-green-600 mx-auto mb-2" />
+                <p className="text-2xl font-bold text-gray-900">{totalUnits}</p>
+                <p className="text-sm text-gray-600">Total Units</p>
+              </div>
+              <div className="bg-white rounded-lg shadow-md p-4 text-center">
+                <TrendingUp className="w-8 h-8 text-purple-600 mx-auto mb-2" />
+                <p className="text-2xl font-bold text-gray-900">{Math.round(totalUnits / courses.length * 10) / 10}</p>
+                <p className="text-sm text-gray-600">Avg. Units/Course</p>
+              </div>
+            </div>
           )}
         </div>
       </div>
+
+      <style jsx>{`
+        .slider::-webkit-slider-thumb {
+          appearance: none;
+          height: 20px;
+          width: 20px;
+          border-radius: 50%;
+          background: #2563eb;
+          cursor: pointer;
+        }
+        .slider::-moz-range-thumb {
+          height: 20px;
+          width: 20px;
+          border-radius: 50%;
+          background: #2563eb;
+          cursor: pointer;
+          border: none;
+        }
+      `}</style>
     </>
   );
 }

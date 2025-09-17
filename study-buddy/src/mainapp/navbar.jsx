@@ -90,7 +90,7 @@ export default function Nav() {
           <div className="flex items-center">
             <NavLink to="/mainapp" className="flex items-center space-x-2">
               <BookOpen className="w-6 h-6" />
-              <span className={`text-xl font-bold ${isScrolled ? "text-blue-600" : "text-blue-500 md:text-white"}`}>
+              <span className={`text-xl font-bold ${isScrolled ? "text-purple-600" : "text-purple-500 md:text-white"}`}>
                 Study Buddy
               </span>
             </NavLink>
@@ -106,10 +106,10 @@ export default function Nav() {
                   `px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
                     isActive
                       ? isScrolled
-                        ? "text-blue-600 bg-blue-50" 
-                        : "text-white bg-blue-600/20"
+                        ? "text-purple-600 bg-purple-50"
+                        : "text-white bg-purple-600/20"
                       : isScrolled
-                        ? "text-gray-700 hover:text-blue-600 hover:bg-blue-50" 
+                        ? "text-gray-700 hover:text-purple-600 hover:bg-purple-50"
                         : "text-gray-100 hover:text-white hover:bg-white/20"
                   }`
                 }
@@ -123,7 +123,7 @@ export default function Nav() {
               <button
                 className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 flex items-center ${
                   isScrolled
-                    ? "text-gray-700 hover:text-blue-600 hover:bg-blue-50"
+                    ? "text-gray-700 hover:text-purple-600 hover:bg-purple-50"
                     : "text-gray-100 hover:text-white hover:bg-white/20"
                 }`}
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}

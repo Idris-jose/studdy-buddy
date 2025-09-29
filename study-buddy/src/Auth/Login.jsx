@@ -173,13 +173,22 @@ const Login = () => {
           Sign in with Google
         </button>
 
-          <button
-        onClick={handleDemoLogin}
-      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-    >
-      Demo Login
-    </button>
-        
+       <button
+  onClick={handleDemoLogin}
+  disabled={loading}
+  className="w-full bg-gray-800 hover:bg-gray-900 mt-10 text-white font-medium rounded-md px-4 py-3 transition duration-300 flex justify-center items-center disabled:opacity-50"
+>
+  {loading ? (
+    <span className="flex items-center justify-center">
+      <span className="inline-block h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
+      Logging in...
+    </span>
+  ) : (
+    "Continue as a Demo user"
+  )}
+</button>
+
+
         <div className="text-center mt-6">
           <p className="text-gray-600">
             Don't have an account?{' '}

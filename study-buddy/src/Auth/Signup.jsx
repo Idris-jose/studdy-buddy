@@ -4,7 +4,7 @@ import { useAuth } from './AuthContext.jsx';
 import { Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react';
 
 const SignUp = () => {
-  const { signUp, signInWithGoogle } = useAuth();
+  const { signUp, signInWithGoogle,handleDemoLogin } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -170,6 +170,22 @@ const SignUp = () => {
           </svg>
           Sign up with Google
         </button>
+
+         <button
+  onClick={handleDemoLogin}
+  disabled={loading}
+  className="w-full bg-gray-800 hover:bg-gray-900 mt-5 text-white font-medium rounded-md px-4 py-3 transition duration-300 flex justify-center items-center disabled:opacity-50"
+>
+  {loading ? (
+    <span className="flex items-center justify-center">
+      <span className="inline-block h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></span>
+      Logging in...
+    </span>
+  ) : (
+    "Continue as a Demo user"
+  )}
+</button>
+
         
         <div className="text-center mt-6">
           <p className="text-gray-600">

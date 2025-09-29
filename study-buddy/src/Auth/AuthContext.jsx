@@ -74,14 +74,17 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const handleDemoLogin = async () => {
+ const handleDemoLogin = async () => {
     try {
-      // Use a fixed demo account
+      setLoading(true)
       await signInWithEmailAndPassword(auth, "demo@yourapp.com", "demopassword")
-      alert("Logged in as demo user ✅")
+      toast.success("🎉 Logged in as demo user!")
+      Navigate('/mainapp')
     } catch (error) {
-      console.error(error)
-      alert("Demo login failed ❌")
+      console.error("Demo login error:", error.message)
+      toast.error("❌ Demo login failed. Please try again.")
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -144,6 +147,7 @@ export const AuthProvider = ({ children }) => {
       isAuthenticated,
       signUp,
       signIn,
+      handleDemoLogin,
       signInWithGoogle,
       sendPasswordReset,
       logout

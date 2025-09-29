@@ -1,44 +1,18 @@
 import {  NavLink,useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { Menu, X, BookOpen } from 'lucide-react';
+import {useAuth} from '../Auth/AuthContext.jsx'
 import { supabase } from '../client.js';
 
 export default function Nav() {
   const navigate = useNavigate();
+  const { user,logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const dropdownRef = useRef(null);
 
-  // Check authentication status
-  useEffect(() => {
-    const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setIsLoggedIn(!!session);
-    };
-
-    checkUser();
-
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      setIsLoggedIn(!!session);
-    });
-
-    return () => {
-      authListener.subscription?.unsubscribe();
-    };
-  }, []);
-
-  // Handle scroll effect for navbar
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrollPosition = window.scrollY;
-      setIsScrolled(scrollPosition > 10);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -90,7 +64,7 @@ export default function Nav() {
           <div className="flex items-center">
             <NavLink to="/mainapp" className="flex items-center space-x-2">
               <BookOpen className="w-6 h-6" />
-              <span className={`text-xl font-bold ${isScrolled ? "text-purple-600" : "text-purple-500 md:text-white"}`}>
+              <span className={`text-xl font-bold  text-blue-600 }`}>
                 Study Buddy
               </span>
             </NavLink>
@@ -105,12 +79,10 @@ export default function Nav() {
                 className={({ isActive }) =>
                   `px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 ${
                     isActive
-                      ? isScrolled
-                        ? "text-purple-600 bg-purple-50"
-                        : "text-white bg-purple-600/20"
-                      : isScrolled
-                        ? "text-gray-700 hover:text-purple-600 hover:bg-purple-50"
-                        : "text-gray-100 hover:text-white hover:bg-white/20"
+                     
+                        ? "text-white bg-blue-500"
+                        : "text-blue-500  hover:bg-white/20  "
+                    
                   }`
                 }
               >
@@ -123,7 +95,7 @@ export default function Nav() {
               <button
                 className={`px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200 flex items-center ${
                   isScrolled
-                    ? "text-gray-700 hover:text-purple-600 hover:bg-purple-50"
+                    ? "text-gray-700 hover:text-blue-600 hover:bg-purple-50"
                     : "text-gray-100 hover:text-white hover:bg-white/20"
                 }`}
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -174,13 +146,12 @@ export default function Nav() {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center space-x-3">
-            {isLoggedIn ? (
+            {user ? (
               <button
-                onClick={handleLogout}
+                onClick={logout}
                 className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                  isScrolled
-                    ? "text-blue-600 hover:bg-blue-50"
-                    : "text-white hover:bg-white/10"
+                   "text-white bg-blue-600 "
+                   
                 }`}
                 aria-label="Log out of Study Buddy"
               >
@@ -191,9 +162,8 @@ export default function Nav() {
                 <NavLink
                   to="/login"
                   className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
-                    isScrolled
-                      ? "text-blue-600 hover:bg-blue-50"
-                      : "text-white hover:bg-white/10"
+                    "text-blue-600 hover:bg-blue-50"
+                     
                   }`}
                 >
                   Log In

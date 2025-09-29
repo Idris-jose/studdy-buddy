@@ -9,6 +9,7 @@ import {
 } from 'firebase/auth';
 import { auth, googleProvider } from './firebase/Firebase-config.js'; 
 import toast, { Toaster } from 'react-hot-toast';
+import { useNavigate} from 'react-router-dom';
 
 const AuthContext = createContext();
 
@@ -24,6 +25,8 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const Navigate = useNavigate();
 
   // Listen for auth state changes
   useEffect(() => {
@@ -71,6 +74,17 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const handleDemoLogin = async () => {
+    try {
+      // Use a fixed demo account
+      await signInWithEmailAndPassword(auth, "demo@yourapp.com", "demopassword")
+      alert("Logged in as demo user ✅")
+    } catch (error) {
+      console.error(error)
+      alert("Demo login failed ❌")
+    }
+  }
+
   const signInWithGoogle = async () => {
     try {
       setLoading(true);
@@ -115,6 +129,8 @@ export const AuthProvider = ({ children }) => {
     try {
       await signOut(auth);
       toast.success('Logged out successfully!');
+      setUser(null);
+      Navigate('/')
     } catch (error) {
       console.error('Logout error:', error.message);
       toast.error(error.message);

@@ -109,23 +109,7 @@ export default function MainApp() {
             </p>
           </div>
 
-          {/* Stats Row */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 w-full max-w-2xl">
-            {stats.map((stat, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-md p-4 text-center">
-                <div className="text-blue-600 mb-2 flex justify-center">
-                  {stat.icon}
-                </div>
-                <div className="text-2xl font-bold text-blue-900">{stat.value}</div>
-                <div className="text-sm text-blue-600">{stat.label}</div>
-              </div>
-            ))}
-          </div>
-
-          {/* Motivational Quote */}
-          <div className="bg-white rounded-lg shadow-md px-8 py-4 mb-12 max-w-3xl border-l-4 border-blue-500">
-            <p className="text-blue-800 italic text-center text-lg">"{quotes[currentQuoteIndex]}"</p>
-          </div>
+          
 
           {/* Feature Grid */}
           <div className="w-full max-w-6xl mb-12">

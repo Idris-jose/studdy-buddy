@@ -1,10 +1,10 @@
+import json
 from flask import Flask, request, jsonify
 from pdfminer.high_level import extract_text
 import requests
 import os
 from werkzeug.utils import secure_filename
 from flask_cors import CORS
-import json
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -20,7 +20,7 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # Gemini API configuration
 GEMINI_API_KEY = os.getenv('VITE_GEMINI_API_KEY')  # Use environment variable
-GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent'
+GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent'
 
 def process_pdf(file):
     """Helper function to handle PDF upload and text extraction."""
